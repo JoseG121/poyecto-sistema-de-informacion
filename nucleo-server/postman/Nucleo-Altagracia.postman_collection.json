@@ -1,0 +1,691 @@
+{
+  "info": {
+    "name": "Núcleo Puertos de Altagracia - API",
+    "description": "Colección de pruebas del backend del Núcleo Musical Puertos de Altagracia con el esquema persona, usuario, estudiante, representante e instrumento.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001/api" },
+    { "key": "token", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "operadorToken", "value": "" },
+    { "key": "estudianteId", "value": "1" },
+    { "key": "instrumentoId", "value": "1" },
+    { "key": "serial", "value": "TST-900" }
+  ],
+  "item": [
+    {
+      "name": "Salud",
+      "item": [
+        {
+          "name": "Health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('API disponible', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/salud",
+              "host": ["{{baseUrl}}"],
+              "path": ["salud"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Registrar usuario (clave 1234)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registro exitoso', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"V-12345678\",\n  \"nombre\": \"María\",\n  \"apellido\": \"Pérez\",\n  \"direccion\": \"Av. Principal, casa 12\",\n  \"contrasena\": \"Maria123!\",\n  \"claveValidacion\": \"1234\",\n  \"rol\": \"user\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/autenticacion/registro",
+              "host": ["{{baseUrl}}"],
+              "path": ["autenticacion", "registro"]
+            }
+          }
+        },
+        {
+          "name": "Registrar usuario con clave inválida (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Clave rechazada', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"V-12345679\",\n  \"nombre\": \"Usuario\",\n  \"apellido\": \"Intruso\",\n  \"contrasena\": \"Intruso123!\",\n  \"claveValidacion\": \"0000\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/autenticacion/registro",
+              "host": ["{{baseUrl}}"],
+              "path": ["autenticacion", "registro"]
+            }
+          }
+        },
+        {
+          "name": "Login administrador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login exitoso', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "if (body.datos && body.datos.token) {",
+                  "  pm.collectionVariables.set('adminToken', body.datos.token);",
+                  "  pm.collectionVariables.set('token', body.datos.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"V-00000001\",\n  \"contrasena\": \"Admin123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/autenticacion/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["autenticacion", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login operador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login exitoso', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "if (body.datos && body.datos.token) {",
+                  "  pm.collectionVariables.set('operadorToken', body.datos.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"V-00000002\",\n  \"contrasena\": \"Operador123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/autenticacion/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["autenticacion", "login"]
+            }
+          }
+        },
+        {
+          "name": "Perfil de la sesión",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacion/perfil",
+              "host": ["{{baseUrl}}"],
+              "path": ["autenticacion", "perfil"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estudiantes",
+      "item": [
+        {
+          "name": "Crear estudiante con dos representantes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estudiante creado', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "if (body.datos && body.datos.id) {",
+                  "  pm.collectionVariables.set('estudianteId', String(body.datos.id));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudiante\": {\n    \"cedula\": \"V-20456789\",\n    \"nombre\": \"Diego\",\n    \"apellido\": \"Hernández\",\n    \"direccion\": \"Calle Bolívar, casa 5\",\n    \"fechaNacimiento\": \"2012-07-18\"\n  },\n  \"representantes\": [\n    {\n      \"cedula\": \"V-45678901\",\n      \"nombre\": \"Laura\",\n      \"apellido\": \"Hernández\",\n      \"direccion\": \"Calle Bolívar, casa 5\",\n      \"correo\": \"laura.hernandez@correo.com\",\n      \"telefono\": \"0414-4567890\",\n      \"parentesco\": \"Madre\"\n    },\n    {\n      \"cedula\": \"V-45678902\",\n      \"nombre\": \"Pedro\",\n      \"apellido\": \"Hernández\",\n      \"correo\": \"pedro.hernandez@correo.com\",\n      \"telefono\": \"0414-4567891\",\n      \"parentesco\": \"Padre\"\n    }\n  ],\n  \"fechaInscripcion\": \"2026-11-17\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes"]
+            }
+          }
+        },
+        {
+          "name": "Listar estudiantes inscritos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes?pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes"],
+              "query": [
+                { "key": "pagina", "value": "1" },
+                { "key": "limite", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar estudiantes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes?buscar=Ana&pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes"],
+              "query": [
+                { "key": "buscar", "value": "Ana" },
+                { "key": "pagina", "value": "1" },
+                { "key": "limite", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar estudiantes sin instrumento",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes?asignado=false&pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes"],
+              "query": [
+                { "key": "asignado", "value": "false" },
+                { "key": "pagina", "value": "1" },
+                { "key": "limite", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ver estudiante",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes/{{estudianteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes", "{{estudianteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Planilla de inscripción",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes/{{estudianteId}}/planilla",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes", "{{estudianteId}}", "planilla"]
+            }
+          }
+        },
+        {
+          "name": "Crear estudiante como operador (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Acceso denegado', function () {",
+                  "  pm.response.to.have.status(403);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{operadorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudiante\": {\n    \"nombre\": \"No\",\n    \"apellido\": \"Permitido\"\n  },\n  \"representantes\": [\n    {\n      \"cedula\": \"V-11111111\",\n      \"nombre\": \"Sin\",\n      \"apellido\": \"Permiso\",\n      \"parentesco\": \"Tutor\"\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Instrumentos",
+      "item": [
+        {
+          "name": "Crear instrumento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Instrumento creado', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "if (body.datos) {",
+                  "  pm.collectionVariables.set('instrumentoId', String(body.datos.id));",
+                  "  pm.collectionVariables.set('serial', body.datos.serial);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"cuerda\",\n  \"nombre\": \"violín\",\n  \"marca\": \"Stentor\",\n  \"serial\": \"TST-900\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"]
+            }
+          }
+        },
+        {
+          "name": "Crear instrumento de percusión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Instrumento creado', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"percusión\",\n  \"nombre\": \"redoblante\",\n  \"marca\": \"Pearl\",\n  \"serial\": \"PC-900\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"]
+            }
+          }
+        },
+        {
+          "name": "Listar instrumentos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos?pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"],
+              "query": [
+                { "key": "pagina", "value": "1" },
+                { "key": "limite", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar instrumentos disponibles",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos?estado=disponible&pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"],
+              "query": [
+                { "key": "estado", "value": "disponible" },
+                { "key": "pagina", "value": "1" },
+                { "key": "limite", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar instrumentos de cuerda",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos?categoria=cuerda&pagina=1&limite=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"],
+              "query": [
+                { "key": "categoria", "value": "cuerda" },
+                { "key": "pagina", "value": "1" },
+                { "key": "limite", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verificar serial disponible",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Serial disponible', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().datos.disponible).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos/verificar-serial?serial=SERIAL-NUEVO-001",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos", "verificar-serial"],
+              "query": [{ "key": "serial", "value": "SERIAL-NUEVO-001" }]
+            }
+          }
+        },
+        {
+          "name": "Verificar serial ocupado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Serial no disponible', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().datos.disponible).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos/verificar-serial?serial=VN-001",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos", "verificar-serial"],
+              "query": [{ "key": "serial", "value": "VN-001" }]
+            }
+          }
+        },
+        {
+          "name": "Ver instrumento",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos/{{instrumentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos", "{{instrumentoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Asignar instrumento por serial y marca",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Instrumento asignado', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serial\": \"{{serial}}\",\n  \"marca\": \"Stentor\",\n  \"idEstudiante\": {{estudianteId}}\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos/asignar",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos", "asignar"]
+            }
+          }
+        },
+        {
+          "name": "Verificar asignación en el estudiante",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/estudiantes/{{estudianteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estudiantes", "{{estudianteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Liberar instrumento",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos/{{instrumentoId}}/liberar",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos", "{{instrumentoId}}", "liberar"]
+            }
+          }
+        },
+        {
+          "name": "Categoría inválida (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Categoría rechazada', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"electrónico\",\n  \"nombre\": \"sintetizador\",\n  \"marca\": \"Yamaha\",\n  \"serial\": \"SYN-001\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"]
+            }
+          }
+        },
+        {
+          "name": "Nombre inválido para categoría (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Nombre rechazado', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"madera\",\n  \"nombre\": \"trompeta\",\n  \"marca\": \"Bach\",\n  \"serial\": \"XX-001\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"]
+            }
+          }
+        },
+        {
+          "name": "Serial duplicado (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Serial duplicado rechazado', function () {",
+                  "  pm.response.to.have.status(409);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoria\": \"cuerda\",\n  \"nombre\": \"violín\",\n  \"marca\": \"Otra marca\",\n  \"serial\": \"VN-001\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/instrumentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["instrumentos"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

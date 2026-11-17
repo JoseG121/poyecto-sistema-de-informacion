@@ -1,0 +1,302 @@
+import {
+  ArrowLeft,
+  CalendarDays,
+  Download,
+  Fingerprint,
+  Guitar,
+  Link2,
+  Unlink,
+  UserRound,
+  Users,
+} from 'lucide-react'
+import { useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+
+import { EmptyState } from '@/components/shared/empty-state'
+import { CategoryBadge } from '@/components/shared/instrument-badges'
+import { PageHeader } from '@/components/shared/page-header'
+import { UnassignDialog } from '@/components/shared/unassign-dialog'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { AssignInstrumentDialog } from '@/components/assignments/AssignInstrumentDialog'
+import { useAuth } from '@/context/AuthContext'
+import { useData } from '@/context/DataContext'
+import { useEnrollmentPdf } from '@/utils/pdf/use-enrollment-pdf'
+import {
+  formatLongDate,
+  fullName,
+  initials,
+} from '@/utils/utils'
+import type { Student } from '@/types/domain'
+
+function DetailRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof CalendarDays
+  label: string
+  value: string
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground">
+        <Icon className="size-4" aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm font-medium break-words">{value}</p>
+      </div>
+    </div>
+  )
+}
+
+export default function StudentDetailPage() {
+  const { id } = useParams<{ id: string }>()
+  const { isAdmin } = useAuth()
+  const { students, isLoading } = useData()
+  const [assignOpen, setAssignOpen] = useState(false)
+  const [unassignOpen, setUnassignOpen] = useState(false)
+  const downloadPdf = useEnrollmentPdf()
+
+  const student: Student | undefined = students.find(
+    (candidate) => candidate.id === id,
+  )
+
+  if (isLoading && !student) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-9 w-52" />
+        <Skeleton className="h-5 w-80 max-w-full" />
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Skeleton className="h-64 lg:col-span-2" />
+          <Skeleton className="h-64" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!student) {
+    return (
+      <EmptyState
+        icon={Users}
+        title="Estudiante no encontrado"
+        description="El estudiante solicitado no existe o fue removido de la matrícula."
+        action={
+          <Button asChild>
+            <Link to="/estudiantes">
+              <ArrowLeft className="size-4" />
+              Volver al listado
+            </Link>
+          </Button>
+        }
+      />
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title={fullName(student.firstName, student.lastName)}
+        description={`Inscrito el ${formatLongDate(student.enrollmentDate)} · ID ${student.id}`}
+        actions={
+          <>
+            <Button variant="outline" asChild>
+              <Link to="/estudiantes">
+                <ArrowLeft className="size-4" />
+                Volver
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => downloadPdf(student)}
+            >
+              <Download className="size-4" />
+              Descargar planilla
+            </Button>
+            {isAdmin &&
+              (student.instrument ? (
+                <Button
+                  variant="outline"
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => setUnassignOpen(true)}
+                >
+                  <Unlink className="size-4" />
+                  Liberar instrumento
+                </Button>
+              ) : (
+                <Button onClick={() => setAssignOpen(true)}>
+                  <Link2 className="size-4" />
+                  Asignar instrumento
+                </Button>
+              ))}
+          </>
+        }
+      />
+
+      <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+        <Avatar className="size-12">
+          <AvatarFallback className="text-base">
+            {initials(student.firstName, student.lastName)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <p className="font-heading text-lg font-semibold">
+            {fullName(student.firstName, student.lastName)}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {student.studentCedula ?? 'Cédula del estudiante no registrada'}
+          </p>
+        </div>
+        <Badge variant="success">Matrícula activa</Badge>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Users className="size-4 text-primary" aria-hidden="true" />
+                Datos del estudiante
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
+              <DetailRow
+                icon={Users}
+                label="Nombre completo"
+                value={fullName(student.firstName, student.lastName)}
+              />
+              <DetailRow
+                icon={Fingerprint}
+                label="Cédula"
+                value={student.studentCedula ?? 'No registrada'}
+              />
+              <DetailRow
+                icon={CalendarDays}
+                label="Fecha de inscripción"
+                value={formatLongDate(student.enrollmentDate)}
+              />
+              <DetailRow
+                icon={Fingerprint}
+                label="ID interno"
+                value={student.id}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <UserRound className="size-4 text-primary" aria-hidden="true" />
+                Representante
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
+              <DetailRow
+                icon={UserRound}
+                label="Nombre completo"
+                value={fullName(
+                  student.representativeFirstName,
+                  student.representativeLastName,
+                )}
+              />
+              <DetailRow
+                icon={Fingerprint}
+                label="Cédula"
+                value={student.representativeCedula}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="h-fit">
+          <CardHeader className="border-b">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Guitar className="size-4 text-primary" aria-hidden="true" />
+              Instrumento asignado
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {student.instrument ? (
+              <div className="space-y-4">
+                <div className="rounded-xl border bg-gradient-to-br from-primary/5 via-card to-amber-500/5 p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-heading text-lg font-semibold capitalize">
+                        {student.instrument.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {student.instrument.brand}
+                      </p>
+                    </div>
+                    <CategoryBadge category={student.instrument.category} />
+                  </div>
+                  <div className="mt-4 rounded-lg border bg-background/70 p-3">
+                    <p className="text-[11px] tracking-wide text-muted-foreground uppercase">
+                      Serial
+                    </p>
+                    <p className="font-mono text-sm font-medium">
+                      {student.instrument.serial}
+                    </p>
+                  </div>
+                </div>
+
+                {isAdmin && (
+                  <Button
+                    variant="outline"
+                    className="w-full text-destructive hover:text-destructive"
+                    onClick={() => setUnassignOpen(true)}
+                  >
+                    <Unlink className="size-4" />
+                    Liberar instrumento
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed bg-muted/20 px-4 py-8 text-center">
+                  <div className="grid size-10 place-items-center rounded-full bg-muted text-muted-foreground">
+                    <Guitar className="size-5" aria-hidden="true" />
+                  </div>
+                  <p className="text-sm font-medium">Sin instrumento</p>
+                  <p className="text-xs text-muted-foreground">
+                    Este estudiante aún no tiene un instrumento vinculado.
+                  </p>
+                </div>
+                {isAdmin && (
+                  <Button
+                    className="w-full"
+                    onClick={() => setAssignOpen(true)}
+                  >
+                    <Link2 className="size-4" />
+                    Asignar instrumento
+                  </Button>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <AssignInstrumentDialog
+        open={assignOpen}
+        onOpenChange={setAssignOpen}
+        student={student}
+      />
+
+      <UnassignDialog
+        student={student}
+        open={unassignOpen}
+        onOpenChange={setUnassignOpen}
+      />
+    </div>
+  )
+}

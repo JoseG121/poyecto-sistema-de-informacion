@@ -1,0 +1,256 @@
+@baseUrl = http://localhost:3001/api
+@adminToken = REEMPLAZA_CON_EL_TOKEN_DEL_ADMIN
+@operadorToken = REEMPLAZA_CON_EL_TOKEN_DEL_OPERADOR
+@estudianteId = 1
+@instrumentoId = 1
+@serial = TST-001
+
+### Salud
+GET {{baseUrl}}/salud
+
+### Registro con clave correcta
+POST {{baseUrl}}/autenticacion/registro
+Content-Type: application/json
+
+{
+  "cedula": "V-12345678",
+  "nombre": "María",
+  "apellido": "Pérez",
+  "direccion": "Av. Principal, casa 12",
+  "contrasena": "Maria123!",
+  "claveValidacion": "1234",
+  "rol": "user"
+}
+
+### Registro con clave incorrecta (debe devolver 400)
+POST {{baseUrl}}/autenticacion/registro
+Content-Type: application/json
+
+{
+  "cedula": "V-12345679",
+  "nombre": "Intruso",
+  "apellido": "No Permitido",
+  "contrasena": "Intruso123!",
+  "claveValidacion": "0000"
+}
+
+### Login administrador
+POST {{baseUrl}}/autenticacion/login
+Content-Type: application/json
+
+{
+  "cedula": "V-00000001",
+  "contrasena": "Admin123!"
+}
+
+### Login operador
+POST {{baseUrl}}/autenticacion/login
+Content-Type: application/json
+
+{
+  "cedula": "V-00000002",
+  "contrasena": "Operador123!"
+}
+
+### Perfil de la sesión
+GET {{baseUrl}}/autenticacion/perfil
+Authorization: Bearer {{adminToken}}
+
+### Listar estudiantes inscritos
+GET {{baseUrl}}/estudiantes?pagina=1&limite=10
+Authorization: Bearer {{adminToken}}
+
+### Buscar estudiantes
+GET {{baseUrl}}/estudiantes?buscar=Ana&pagina=1&limite=10
+Authorization: Bearer {{adminToken}}
+
+### Filtrar estudiantes sin instrumento
+GET {{baseUrl}}/estudiantes?asignado=false&pagina=1&limite=10
+Authorization: Bearer {{adminToken}}
+
+### Ver estudiante
+GET {{baseUrl}}/estudiantes/{{estudianteId}}
+Authorization: Bearer {{adminToken}}
+
+### Planilla de inscripción (JSON optimizado)
+GET {{baseUrl}}/estudiantes/{{estudianteId}}/planilla
+Authorization: Bearer {{adminToken}}
+
+### Crear estudiante con dos representantes
+POST {{baseUrl}}/estudiantes
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "estudiante": {
+    "cedula": "V-20456789",
+    "nombre": "Diego",
+    "apellido": "Hernández",
+    "direccion": "Calle Bolívar, casa 5",
+    "fechaNacimiento": "2012-07-18"
+  },
+  "representantes": [
+    {
+      "cedula": "V-45678901",
+      "nombre": "Laura",
+      "apellido": "Hernández",
+      "direccion": "Calle Bolívar, casa 5",
+      "correo": "laura.hernandez@correo.com",
+      "telefono": "0414-4567890",
+      "parentesco": "Madre"
+    },
+    {
+      "cedula": "V-45678902",
+      "nombre": "Pedro",
+      "apellido": "Hernández",
+      "direccion": "Calle Bolívar, casa 5",
+      "correo": "pedro.hernandez@correo.com",
+      "telefono": "0414-4567891",
+      "parentesco": "Padre"
+    }
+  ],
+  "fechaInscripcion": "2026-11-17"
+}
+
+### Crear estudiante sin cédula
+POST {{baseUrl}}/estudiantes
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "estudiante": {
+    "nombre": "Valentina",
+    "apellido": "Gómez"
+  },
+  "representantes": [
+    {
+      "cedula": "V-56789012",
+      "nombre": "Pedro",
+      "apellido": "Gómez",
+      "parentesco": "Padre"
+    }
+  ]
+}
+
+### Intentar crear estudiante como operador (debe devolver 403)
+POST {{baseUrl}}/estudiantes
+Authorization: Bearer {{operadorToken}}
+Content-Type: application/json
+
+{
+  "estudiante": {
+    "nombre": "No",
+    "apellido": "Permitido"
+  },
+  "representantes": [
+    {
+      "cedula": "V-11111111",
+      "nombre": "Sin",
+      "apellido": "Permiso",
+      "parentesco": "Tutor"
+    }
+  ]
+}
+
+### Listar instrumentos
+GET {{baseUrl}}/instrumentos?pagina=1&limite=10
+Authorization: Bearer {{adminToken}}
+
+### Listar instrumentos disponibles
+GET {{baseUrl}}/instrumentos?estado=disponible&pagina=1&limite=10
+Authorization: Bearer {{adminToken}}
+
+### Listar instrumentos de cuerda
+GET {{baseUrl}}/instrumentos?categoria=cuerda&pagina=1&limite=10
+Authorization: Bearer {{adminToken}}
+
+### Verificar serial existente (disponible: false)
+GET {{baseUrl}}/instrumentos/verificar-serial?serial=VN-001
+Authorization: Bearer {{adminToken}}
+
+### Verificar serial libre (disponible: true)
+GET {{baseUrl}}/instrumentos/verificar-serial?serial=SERIAL-NUEVO-001
+Authorization: Bearer {{adminToken}}
+
+### Crear instrumento de cuerda (admin)
+POST {{baseUrl}}/instrumentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "categoria": "cuerda",
+  "nombre": "violín",
+  "marca": "Stentor",
+  "serial": "{{serial}}"
+}
+
+### Crear instrumento de percusión (admin)
+POST {{baseUrl}}/instrumentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "categoria": "percusión",
+  "nombre": "redoblante",
+  "marca": "Pearl",
+  "serial": "PC-002"
+}
+
+### Ver instrumento
+GET {{baseUrl}}/instrumentos/{{instrumentoId}}
+Authorization: Bearer {{adminToken}}
+
+### Asignar instrumento por serial y marca (admin)
+POST {{baseUrl}}/instrumentos/asignar
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "serial": "{{serial}}",
+  "marca": "Stentor",
+  "idEstudiante": {{estudianteId}}
+}
+
+### Liberar instrumento (admin)
+POST {{baseUrl}}/instrumentos/{{instrumentoId}}/liberar
+Authorization: Bearer {{adminToken}}
+
+### Categoría inválida (debe devolver 400)
+POST {{baseUrl}}/instrumentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "categoria": "electrónico",
+  "nombre": "sintetizador",
+  "marca": "Yamaha",
+  "serial": "SYN-001"
+}
+
+### Nombre inválido para la categoría (debe devolver 400)
+POST {{baseUrl}}/instrumentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "categoria": "madera",
+  "nombre": "trompeta",
+  "marca": "Bach",
+  "serial": "XX-001"
+}
+
+### Serial duplicado (debe devolver 409)
+POST {{baseUrl}}/instrumentos
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "categoria": "cuerda",
+  "nombre": "violín",
+  "marca": "Otra marca",
+  "serial": "VN-001"
+}
+
+### Logout
+POST {{baseUrl}}/autenticacion/logout
+Authorization: Bearer {{adminToken}}
