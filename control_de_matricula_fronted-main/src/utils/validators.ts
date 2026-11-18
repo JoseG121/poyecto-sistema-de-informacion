@@ -79,13 +79,52 @@ export const parentescoSchema = z
   .min(2, 'Indica el parentesco')
   .max(50, 'El parentesco no puede superar 50 caracteres')
 
+export const direccionSchema = z
+  .string()
+  .trim()
+  .min(1, 'La dirección es obligatoria')
+  .max(200, 'La dirección no puede superar 200 caracteres')
+
+export const fechaNacimientoSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Usa el formato AAAA-MM-DD')
+  .refine((value) => {
+    const date = new Date(`${value}T12:00:00Z`)
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+  }, 'La fecha no es válida')
+  .refine(
+    (value) => new Date(`${value}T00:00:00Z`) <= new Date(),
+    'La fecha de nacimiento no puede ser futura',
+  )
+
+export const telefonoSchema = z
+  .string()
+  .trim()
+  .min(1, 'El teléfono es obligatorio')
+  .max(30, 'El teléfono no puede superar 30 caracteres')
+
+export const correoOpcionalSchema = z
+  .string()
+  .trim()
+  .max(160, 'El correo no puede superar 160 caracteres')
+  .refine(
+    (value) => value === '' || z.string().email().safeParse(value).success,
+    'Correo inválido',
+  )
+
 export const studentSchema = z.object({
   studentCedula: optionalCedulaSchema,
-  representativeCedula: requiredCedulaSchema,
   firstName: personNameSchema,
   lastName: personNameSchema,
+  studentDireccion: direccionSchema,
+  fechaNacimiento: fechaNacimientoSchema,
+  representativeCedula: requiredCedulaSchema,
   representativeFirstName: personNameSchema,
   representativeLastName: personNameSchema,
+  representativeDireccion: direccionSchema,
+  representativeTelefono: telefonoSchema,
+  representativeCorreo: correoOpcionalSchema,
   parentesco: parentescoSchema,
 })
 

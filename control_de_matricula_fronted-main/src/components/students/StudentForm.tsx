@@ -28,11 +28,16 @@ import { studentSchema, type StudentFormValues } from '@/utils/validators'
 
 const studentFields = [
   'studentCedula',
-  'representativeCedula',
   'firstName',
   'lastName',
+  'studentDireccion',
+  'fechaNacimiento',
+  'representativeCedula',
   'representativeFirstName',
   'representativeLastName',
+  'representativeDireccion',
+  'representativeTelefono',
+  'representativeCorreo',
   'parentesco',
 ] as const
 
@@ -51,11 +56,16 @@ export function StudentForm({
     resolver: zodResolver(studentSchema),
     defaultValues: {
       studentCedula: '',
-      representativeCedula: '',
       firstName: '',
       lastName: '',
+      studentDireccion: '',
+      fechaNacimiento: '',
+      representativeCedula: '',
       representativeFirstName: '',
       representativeLastName: '',
+      representativeDireccion: '',
+      representativeTelefono: '',
+      representativeCorreo: '',
       parentesco: 'Tutor',
     },
   })
@@ -152,6 +162,39 @@ export function StudentForm({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="studentDireccion"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Dirección del estudiante</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      autoComplete="street-address"
+                      placeholder="Ej. Calle Bolívar, casa 5"
+                      maxLength={200}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="fechaNacimiento"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2 sm:max-w-md">
+                  <FormLabel>Fecha de nacimiento</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="date" max={new Date().toISOString().slice(0, 10)} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
 
           <Separator />
@@ -216,6 +259,65 @@ export function StudentForm({
                   <FormDescription>
                     Campo obligatorio. Formato: V-12345678 o E-12345678.
                   </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="representativeDireccion"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Dirección del representante</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      autoComplete="street-address"
+                      placeholder="Ej. Calle Bolívar, casa 5"
+                      maxLength={200}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="representativeTelefono"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Teléfono del representante</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="tel"
+                      autoComplete="tel"
+                      placeholder="Ej. 0414-1234567"
+                      maxLength={30}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="representativeCorreo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Correo del representante (opcional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="email"
+                      autoComplete="email"
+                      placeholder="Ej. representante@correo.com"
+                      maxLength={160}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

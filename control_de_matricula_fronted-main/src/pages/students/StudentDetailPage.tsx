@@ -5,6 +5,9 @@ import {
   Fingerprint,
   Guitar,
   Link2,
+  Mail,
+  MapPin,
+  Phone,
   Unlink,
   UserRound,
   Users,
@@ -70,6 +73,7 @@ export default function StudentDetailPage() {
   const student: Student | undefined = students.find(
     (candidate) => candidate.id === id,
   )
+  const representative = student?.representatives[0]
 
   if (isLoading && !student) {
     return (
@@ -181,6 +185,20 @@ export default function StudentDetailPage() {
               />
               <DetailRow
                 icon={CalendarDays}
+                label="Fecha de nacimiento"
+                value={
+                  student.fechaNacimiento
+                    ? formatLongDate(student.fechaNacimiento)
+                    : 'No registrada'
+                }
+              />
+              <DetailRow
+                icon={MapPin}
+                label="Dirección"
+                value={student.direccion ?? 'No registrada'}
+              />
+              <DetailRow
+                icon={CalendarDays}
                 label="Fecha de inscripción"
                 value={formatLongDate(student.enrollmentDate)}
               />
@@ -212,6 +230,26 @@ export default function StudentDetailPage() {
                 icon={Fingerprint}
                 label="Cédula"
                 value={student.representativeCedula}
+              />
+              <DetailRow
+                icon={UserRound}
+                label="Parentesco"
+                value={representative?.parentesco ?? 'No registrado'}
+              />
+              <DetailRow
+                icon={MapPin}
+                label="Dirección"
+                value={representative?.direccion ?? 'No registrada'}
+              />
+              <DetailRow
+                icon={Phone}
+                label="Teléfono"
+                value={representative?.telefono ?? 'No registrado'}
+              />
+              <DetailRow
+                icon={Mail}
+                label="Correo"
+                value={representative?.correo ?? 'No registrado'}
               />
             </CardContent>
           </Card>

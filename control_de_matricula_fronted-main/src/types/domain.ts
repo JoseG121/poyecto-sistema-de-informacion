@@ -34,6 +34,7 @@ export interface Representative {
   cedula: string | null
   firstName: string
   lastName: string
+  direccion: string | null
   parentesco: string
   correo: string | null
   telefono: string | null
@@ -45,6 +46,8 @@ export interface Student {
   representativeCedula: string
   firstName: string
   lastName: string
+  direccion: string | null
+  fechaNacimiento: string | null
   representativeFirstName: string
   representativeLastName: string
   representatives: Representative[]
@@ -54,11 +57,16 @@ export interface Student {
 
 export interface StudentInput {
   studentCedula?: string
-  representativeCedula: string
   firstName: string
   lastName: string
+  studentDireccion: string
+  fechaNacimiento: string
+  representativeCedula: string
   representativeFirstName: string
   representativeLastName: string
+  representativeDireccion: string
+  representativeTelefono: string
+  representativeCorreo?: string
   parentesco: string
 }
 
