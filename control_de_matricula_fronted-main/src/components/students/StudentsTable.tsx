@@ -21,6 +21,7 @@ interface StudentsTableProps {
   onAssign: (student: Student) => void
   onUnassign: (student: Student) => void
   onDownloadPdf: (student: Student) => void
+  onDelete: (student: Student) => void
 }
 
 export function StudentsTable({
@@ -28,6 +29,7 @@ export function StudentsTable({
   onAssign,
   onUnassign,
   onDownloadPdf,
+  onDelete,
 }: StudentsTableProps) {
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
@@ -111,6 +113,7 @@ export function StudentsTable({
                   onAssign={onAssign}
                   onUnassign={onUnassign}
                   onDownloadPdf={onDownloadPdf}
+                  onDelete={onDelete}
                 />
               </TableCell>
             </TableRow>
@@ -126,29 +129,30 @@ export function StudentsCards({
   onAssign,
   onUnassign,
   onDownloadPdf,
+  onDelete,
 }: StudentsTableProps) {
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-2 sm:gap-3">
       {students.map((student) => (
         <article
           key={student.id}
-          className="rounded-xl border bg-card p-4 shadow-sm"
+          className="rounded-xl border bg-card p-3 shadow-sm sm:p-4"
         >
-          <div className="flex items-start gap-3">
-            <Avatar className="size-10">
-              <AvatarFallback>
+          <div className="flex items-start gap-2.5 sm:gap-3">
+            <Avatar className="size-9 sm:size-10">
+              <AvatarFallback className="text-xs sm:text-sm">
                 {initials(student.firstName, student.lastName)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <Link
                 to={`/estudiantes/${student.id}`}
-                className="font-medium underline-offset-4 hover:text-primary hover:underline"
+                className="block truncate text-sm font-medium underline-offset-4 hover:text-primary hover:underline sm:text-base"
               >
                 {fullName(student.firstName, student.lastName)}
               </Link>
-              <p className="text-xs text-muted-foreground">
-                {student.studentCedula ?? 'Cédula no registrada'} · Inscrito el{' '}
+              <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
+                {student.studentCedula ?? 'Cédula no registrada'} ·{' '}
                 {formatDate(student.enrollmentDate)}
               </p>
             </div>
@@ -157,32 +161,37 @@ export function StudentsCards({
               onAssign={onAssign}
               onUnassign={onUnassign}
               onDownloadPdf={onDownloadPdf}
+              onDelete={onDelete}
+              compact
             />
           </div>
 
-          <div className="mt-3 grid gap-2 border-t pt-3 text-xs">
-            <div className="flex justify-between gap-3">
-              <span className="text-muted-foreground">Representante</span>
-              <span className="text-right font-medium">
+          <div className="mt-2.5 grid gap-1.5 border-t pt-2.5 text-[11px] sm:mt-3 sm:gap-2 sm:pt-3 sm:text-xs">
+            <div className="flex items-start justify-between gap-2">
+              <span className="shrink-0 text-muted-foreground">Representante</span>
+              <span className="min-w-0 text-right font-medium leading-snug">
                 {fullName(
                   student.representativeFirstName,
                   student.representativeLastName,
-                )}{' '}
-                · {student.representativeCedula}
+                )}
+                <span className="block text-muted-foreground sm:inline sm:text-foreground">
+                  {' '}
+                  · {student.representativeCedula}
+                </span>
               </span>
             </div>
 
-            <div className="flex items-start justify-between gap-3">
-              <span className="text-muted-foreground">Instrumento</span>
+            <div className="flex items-start justify-between gap-2">
+              <span className="shrink-0 text-muted-foreground">Instrumento</span>
               {student.instrument ? (
-                <div className="text-right">
-                  <div className="flex items-center justify-end gap-2">
+                <div className="min-w-0 text-right">
+                  <div className="flex flex-wrap items-center justify-end gap-1.5">
                     <span className="font-medium capitalize">
                       {student.instrument.name}
                     </span>
                     <CategoryBadge category={student.instrument.category} />
                   </div>
-                  <p className="text-muted-foreground">
+                  <p className="mt-0.5 truncate text-muted-foreground">
                     {student.instrument.brand} ·{' '}
                     <span className="font-mono">
                       {student.instrument.serial}
@@ -190,12 +199,10 @@ export function StudentsCards({
                   </p>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Badge variant="muted" className="gap-1">
-                    <Guitar className="size-3" />
-                    Sin instrumento
-                  </Badge>
-                </div>
+                <Badge variant="muted" className="gap-1">
+                  <Guitar className="size-3" />
+                  Sin instrumento
+                </Badge>
               )}
             </div>
           </div>

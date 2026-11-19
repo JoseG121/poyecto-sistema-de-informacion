@@ -104,16 +104,16 @@ export function RegisterForm() {
 
   return (
     <Card className="border-border/70 shadow-xl shadow-primary/5">
-      <CardHeader className="space-y-1.5">
-        <div className="mb-2 grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+      <CardHeader className="space-y-1.5 p-4 sm:p-6">
+        <div className="mb-2 grid size-10 place-items-center rounded-xl bg-primary/10 text-primary sm:size-11">
           <UserPlus className="size-5" aria-hidden="true" />
         </div>
-        <CardTitle className="text-2xl">Crear cuenta</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl sm:text-2xl">Crear cuenta</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
           Regístrate con la clave de validación del núcleo para comenzar.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-5">
+      <CardContent className="space-y-4 p-4 pt-0 sm:space-y-5 sm:p-6 sm:pt-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

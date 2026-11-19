@@ -146,6 +146,36 @@ Content-Type: application/json
   ]
 }
 
+### Editar estudiante (mismo cuerpo; la fecha de inscripción se conserva si se omite)
+PUT {{baseUrl}}/estudiantes/{{estudianteId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "estudiante": {
+    "cedula": "V-20456789",
+    "nombre": "Diego",
+    "apellido": "Hernández",
+    "direccion": "Calle Bolívar, casa 6",
+    "fechaNacimiento": "2012-07-18"
+  },
+  "representantes": [
+    {
+      "cedula": "V-45678901",
+      "nombre": "Laura",
+      "apellido": "Hernández",
+      "direccion": "Calle Bolívar, casa 6",
+      "correo": "laura.hernandez@correo.com",
+      "telefono": "0414-4567890",
+      "parentesco": "Madre"
+    }
+  ]
+}
+
+### Eliminar estudiante (libera automáticamente su instrumento)
+DELETE {{baseUrl}}/estudiantes/{{estudianteId}}
+Authorization: Bearer {{adminToken}}
+
 ### Listar instrumentos
 GET {{baseUrl}}/instrumentos?pagina=1&limite=10
 Authorization: Bearer {{adminToken}}

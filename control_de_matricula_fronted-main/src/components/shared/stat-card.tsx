@@ -48,22 +48,28 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'group rounded-xl border bg-card p-5 shadow-sm transition-colors',
+        'group rounded-xl border bg-card p-3 shadow-sm transition-colors sm:p-5',
         styles.ring,
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="font-heading text-3xl font-semibold tracking-tight">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="min-w-0 space-y-0.5 sm:space-y-1">
+          <p className="text-xs font-medium text-muted-foreground sm:text-sm">
+            {label}
+          </p>
+          <p className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
             {value}
           </p>
         </div>
-        <div className={cn('rounded-lg p-2.5', styles.icon)}>
-          <Icon className="size-5" aria-hidden="true" />
+        <div className={cn('shrink-0 rounded-lg p-2 sm:p-2.5', styles.icon)}>
+          <Icon className="size-4 sm:size-5" aria-hidden="true" />
         </div>
       </div>
-      {hint && <p className="mt-3 text-xs text-muted-foreground">{hint}</p>}
+      {hint && (
+        <p className="mt-2 text-[11px] leading-snug text-muted-foreground sm:mt-3 sm:text-xs">
+          {hint}
+        </p>
+      )}
     </div>
   )
 }

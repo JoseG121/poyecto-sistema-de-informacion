@@ -1,4 +1,4 @@
-import { FileText, Guitar, Sparkles, Users } from 'lucide-react'
+import { FileText, Guitar, Users } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { BrandMark } from '@/components/shared/brand-mark'
@@ -80,7 +80,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       {/* Se quitó 'bg-background' para dejar ver la imagen de fondo */}
       <main className="relative z-10 flex min-h-svh flex-col">
         <div className="auth-glow pointer-events-none absolute inset-0 opacity-40" />
-        <div className="relative flex items-center justify-between px-5 py-5 sm:px-8">
+        <div className="relative flex items-center justify-between px-4 py-4 sm:px-8 sm:py-5">
           <div className="lg:hidden">
             <BrandMark />
           </div>
@@ -89,7 +89,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        <div className="relative flex flex-1 items-center justify-center px-5 pb-10 sm:px-8">
+        <div className="relative flex flex-1 items-center justify-center px-4 pb-8 sm:px-8 sm:pb-10">
           <div className="w-full max-w-md">{children}</div>
         </div>
 

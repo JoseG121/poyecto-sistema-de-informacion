@@ -143,7 +143,7 @@ export function InstrumentForm({ onCreated, onCancel }: InstrumentFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3 sm:space-y-4">
         <FormField
           control={form.control}
           name="category"
@@ -295,7 +295,7 @@ export function InstrumentForm({ onCreated, onCancel }: InstrumentFormProps) {
           />
         </div>
 
-        <div className="flex flex-col-reverse gap-2 border-t pt-4 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-2 border-t pt-3 sm:flex-row sm:justify-end sm:pt-4">
           {onCancel && (
             <Button
               type="button"

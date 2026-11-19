@@ -12,6 +12,7 @@ import RegisterPage from '@/pages/auth/RegisterPage'
 import DashboardPage from '@/pages/dashboard/DashboardPage'
 import InstrumentsPage from '@/pages/instruments/InstrumentsPage'
 import NotFoundPage from '@/pages/misc/NotFoundPage'
+import EditStudentPage from '@/pages/students/EditStudentPage'
 import NewStudentPage from '@/pages/students/NewStudentPage'
 import StudentDetailPage from '@/pages/students/StudentDetailPage'
 import StudentsPage from '@/pages/students/StudentsPage'
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/estudiantes" element={<StudentsPage />} />
           <Route element={<AdminRoute />}>
             <Route path="/estudiantes/nuevo" element={<NewStudentPage />} />
+            <Route path="/estudiantes/:id/editar" element={<EditStudentPage />} />
           </Route>
           <Route path="/estudiantes/:id" element={<StudentDetailPage />} />
           <Route path="/instrumentos" element={<InstrumentsPage />} />

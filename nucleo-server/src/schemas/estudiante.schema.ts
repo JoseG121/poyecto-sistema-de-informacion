@@ -59,7 +59,7 @@ export const estudiantePersonaSchema = z.object({
   nombre: nombreSchema,
   apellido: apellidoSchema,
   direccion: direccionSchema,
-  fechaNacimiento: fechaSchema,
+  fechaNacimiento: fechaOpcionalSchema,
 });
 
 export const representanteSchema = z.object({
@@ -85,6 +85,15 @@ export const crearEstudianteSchema = z.object({
   fechaInscripcion: fechaOpcionalSchema,
 });
 
+export const actualizarEstudianteSchema = z.object({
+  estudiante: estudiantePersonaSchema,
+  representantes: z
+    .array(representanteSchema)
+    .min(1, 'Debes registrar un representante')
+    .max(1, 'Solo se permite un representante por estudiante'),
+  fechaInscripcion: fechaOpcionalSchema,
+});
+
 export const estudianteListQuerySchema = paginacionQuerySchema.extend({
   buscar: z.string().trim().max(120, 'La búsqueda es demasiado larga').optional(),
   asignado: z
@@ -94,4 +103,5 @@ export const estudianteListQuerySchema = paginacionQuerySchema.extend({
 });
 
 export type CrearEstudianteInput = z.infer<typeof crearEstudianteSchema>;
+export type ActualizarEstudianteInput = z.infer<typeof actualizarEstudianteSchema>;
 export type EstudianteListQuery = z.infer<typeof estudianteListQuerySchema>;

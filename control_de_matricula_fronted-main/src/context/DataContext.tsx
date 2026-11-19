@@ -18,6 +18,7 @@ import type {
   InstrumentInput,
   Student,
   StudentInput,
+  StudentUpdateInput,
 } from '@/types/domain'
 
 interface DataContextValue {
@@ -27,6 +28,8 @@ interface DataContextValue {
   error: string | null
   refresh: () => Promise<void>
   createStudent: (input: StudentInput) => Promise<Student>
+  updateStudent: (id: string, input: StudentUpdateInput) => Promise<Student>
+  deleteStudent: (id: string) => Promise<void>
   createInstrument: (input: InstrumentInput) => Promise<Instrument>
   assignInstrument: (input: AssignmentInput) => Promise<void>
   unassignInstrument: (studentId: string) => Promise<void>
@@ -69,6 +72,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
       const student = await studentsService.create(input)
       await refresh()
       return student
+    },
+    [refresh],
+  )
+
+  const updateStudent = useCallback(
+    async (id: string, input: StudentUpdateInput) => {
+      const student = await studentsService.update(id, input)
+      await refresh()
+      return student
+    },
+    [refresh],
+  )
+
+  const deleteStudent = useCallback(
+    async (id: string) => {
+      await studentsService.remove(id)
+      await refresh()
     },
     [refresh],
   )
@@ -124,6 +144,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       error,
       refresh,
       createStudent,
+      updateStudent,
+      deleteStudent,
       createInstrument,
       assignInstrument,
       unassignInstrument,
@@ -135,6 +157,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       error,
       refresh,
       createStudent,
+      updateStudent,
+      deleteStudent,
       createInstrument,
       assignInstrument,
       unassignInstrument,

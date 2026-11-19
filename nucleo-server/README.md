@@ -146,6 +146,7 @@ El login se realiza con la **cédula**, no con correo.
 | Consultar estudiantes e instrumentos | Sí | Sí |
 | Consultar planilla de inscripción | Sí | Sí |
 | Registrar estudiantes | Sí | No |
+| Editar / eliminar estudiantes | Sí | No |
 | Registrar instrumentos | Sí | No |
 | Asignar / liberar instrumentos | Sí | No |
 
@@ -321,6 +322,8 @@ El JWT guarda `sub = usuario.id`, `cedula` y `rol`.
 | POST | `/api/estudiantes` | Admin | Registrar estudiante con representantes |
 | GET | `/api/estudiantes` | JWT | Listar inscritos |
 | GET | `/api/estudiantes/:id` | JWT | Detalle |
+| PUT | `/api/estudiantes/:id` | Admin | Editar estudiante y representante |
+| DELETE | `/api/estudiantes/:id` | Admin | Eliminar estudiante y liberar su instrumento |
 | GET | `/api/estudiantes/:id/planilla` | JWT | Planilla optimizada (JSON) |
 
 Registro:
@@ -354,6 +357,10 @@ Registro:
 - `fechaInscripcion`: opcional; por defecto la fecha actual.
 - `direccion`, `correo`, `telefono` y `fechaNacimiento`: opcionales.
 - Si el representante ya existe por cédula, se reutiliza y se actualizan sus datos de contacto.
+
+Edición (`PUT /api/estudiantes/:id`): usa el mismo cuerpo. Si se omite `fechaInscripcion` se conserva la existente; al representante se le reutiliza/crea por cédula y se reemplaza su vínculo con el `parentesco` enviado. Responde `{ "datos": Estudiante }`.
+
+Eliminación (`DELETE /api/estudiantes/:id`): borrado físico en una transacción. Si el estudiante tiene instrumento asignado, se elimina el vínculo y el instrumento vuelve a `disponible` / `true`. Se conservan las `persona` de los representantes porque pueden compartirse entre hermanos. Responde `{ "datos": { "id" } }`.
 
 Filtros de listado:
 

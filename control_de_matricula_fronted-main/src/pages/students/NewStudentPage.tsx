@@ -26,8 +26,8 @@ export default function NewStudentPage() {
   }
 
   return (
-    <div className="w-full min-w-0">
-      <div className="border-b bg-background px-4 py-4 sm:px-6">
+    <div className="w-full min-w-0 space-y-4 sm:space-y-6">
+      <div className="border-b pb-4 sm:pb-5">
         <PageHeader
           title="Registrar estudiante"
           description="Completa los datos del alumno y su representante. La fecha de inscripción se registra automáticamente."
@@ -43,7 +43,7 @@ export default function NewStudentPage() {
       </div>
 
       <div className="w-full">
-        <StudentForm onSubmit={handleSubmit} className="rounded-none border-0 shadow-none" />
+        <StudentForm onSubmit={handleSubmit} />
       </div>
     </div>
   )

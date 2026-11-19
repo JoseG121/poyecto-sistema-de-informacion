@@ -91,16 +91,16 @@ export function LoginForm() {
 
   return (
     <Card className="border-white/20 bg-background/50 backdrop-blur-md shadow-2xl">
-      <CardHeader className="space-y-1.5">
-        <div className="mb-2 grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+      <CardHeader className="space-y-1.5 p-4 sm:p-6">
+        <div className="mb-2 grid size-10 place-items-center rounded-xl bg-primary/10 text-primary sm:size-11">
           <LogIn className="size-5" aria-hidden="true" />
         </div>
-        <CardTitle className="text-2xl">Iniciar sesión</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl sm:text-2xl">Iniciar sesión</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
           Ingresa con tu cédula para acceder al control de matrícula.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-10">
+      <CardContent className="space-y-6 p-4 pt-0 sm:space-y-10 sm:p-6 sm:pt-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

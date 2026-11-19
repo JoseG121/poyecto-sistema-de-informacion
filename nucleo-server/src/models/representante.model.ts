@@ -119,6 +119,20 @@ export async function updateRepresentanteContacto(
   );
 }
 
+export async function setRepresentanteContacto(
+  client: PoolClient,
+  id: number,
+  correo: string | null,
+  telefono: string | null,
+): Promise<void> {
+  await client.query(
+    `UPDATE representante
+     SET correo = $2, telefono = $3
+     WHERE id = $1`,
+    [id, correo, telefono],
+  );
+}
+
 export async function vincularRepresentante(
   client: PoolClient,
   idEstudiante: number,

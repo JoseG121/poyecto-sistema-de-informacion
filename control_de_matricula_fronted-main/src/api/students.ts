@@ -1,7 +1,31 @@
 import { api } from '@/api/http'
 import { mapEstudiante } from '@/api/mappers'
 import type { ApiEnvelope, BackendEstudiante } from '@/types/api'
-import type { Student, StudentInput } from '@/types/domain'
+import type { Student, StudentInput, StudentUpdateInput } from '@/types/domain'
+
+function buildPayload(input: StudentInput, fechaInscripcion?: string) {
+  return {
+    estudiante: {
+      cedula: input.studentCedula?.trim() || null,
+      nombre: input.firstName.trim(),
+      apellido: input.lastName.trim(),
+      direccion: input.studentDireccion.trim(),
+      fechaNacimiento: input.fechaNacimiento || null,
+    },
+    representantes: [
+      {
+        cedula: input.representativeCedula.trim(),
+        nombre: input.representativeFirstName.trim(),
+        apellido: input.representativeLastName.trim(),
+        direccion: input.representativeDireccion.trim(),
+        correo: input.representativeCorreo?.trim() || null,
+        telefono: input.representativeTelefono.trim(),
+        parentesco: input.parentesco.trim(),
+      },
+    ],
+    ...(fechaInscripcion ? { fechaInscripcion } : {}),
+  }
+}
 
 export const studentsService = {
   async list(): Promise<Student[]> {
@@ -24,28 +48,24 @@ export const studentsService = {
   async create(input: StudentInput): Promise<Student> {
     const { data } = await api.post<ApiEnvelope<BackendEstudiante>>(
       '/estudiantes',
-      {
-        estudiante: {
-          cedula: input.studentCedula?.trim() || null,
-          nombre: input.firstName.trim(),
-          apellido: input.lastName.trim(),
-          direccion: input.studentDireccion.trim(),
-          fechaNacimiento: input.fechaNacimiento,
-        },
-        representantes: [
-          {
-            cedula: input.representativeCedula.trim(),
-            nombre: input.representativeFirstName.trim(),
-            apellido: input.representativeLastName.trim(),
-            direccion: input.representativeDireccion.trim(),
-            correo: input.representativeCorreo?.trim() || null,
-            telefono: input.representativeTelefono.trim(),
-            parentesco: input.parentesco.trim(),
-          },
-        ],
-      },
+      buildPayload(input),
     )
 
     return mapEstudiante(data.datos)
+  },
+
+  async update(id: string, input: StudentUpdateInput): Promise<Student> {
+    const { data } = await api.put<ApiEnvelope<BackendEstudiante>>(
+      `/estudiantes/${encodeURIComponent(id)}`,
+      buildPayload(input, input.fechaInscripcion),
+    )
+
+    return mapEstudiante(data.datos)
+  },
+
+  async remove(id: string): Promise<void> {
+    await api.delete<ApiEnvelope<{ id: number }>>(
+      `/estudiantes/${encodeURIComponent(id)}`,
+    )
   },
 }
