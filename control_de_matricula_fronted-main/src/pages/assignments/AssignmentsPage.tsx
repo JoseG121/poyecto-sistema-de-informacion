@@ -48,13 +48,13 @@ export default function AssignmentsPage() {
   const showLoading = isLoading && students.length === 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Asignaciones"
         description="Vinculaciones activas entre estudiantes e instrumentos del inventario."
         actions={
           isAdmin ? (
-            <Button onClick={() => setAssignOpen(true)}>
+            <Button onClick={() => setAssignOpen(true)} className="sm:w-auto">
               <Link2 className="size-4" />
               Asignar instrumento
             </Button>
@@ -62,29 +62,29 @@ export default function AssignmentsPage() {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3 sm:max-w-xl">
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Asignados</p>
-          <p className="font-heading text-xl font-semibold">
+      <div className="grid grid-cols-3 gap-2 sm:max-w-xl sm:gap-3">
+        <div className="rounded-lg border bg-card px-2.5 py-2 sm:px-4 sm:py-3">
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Asignados</p>
+          <p className="font-heading text-lg font-semibold sm:text-xl">
             {assignedStudents.length}
           </p>
         </div>
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Disponibles</p>
-          <p className="font-heading text-xl font-semibold text-emerald-600 dark:text-emerald-400">
+        <div className="rounded-lg border bg-card px-2.5 py-2 sm:px-4 sm:py-3">
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Disponibles</p>
+          <p className="font-heading text-lg font-semibold text-emerald-600 dark:text-emerald-400 sm:text-xl">
             {availableCount}
           </p>
         </div>
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Cobertura</p>
-          <p className="font-heading text-xl font-semibold text-primary">
+        <div className="rounded-lg border bg-card px-2.5 py-2 sm:px-4 sm:py-3">
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Cobertura</p>
+          <p className="font-heading text-lg font-semibold text-primary sm:text-xl">
             {coverage}%
           </p>
         </div>
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border bg-gradient-to-r from-primary/5 via-card to-amber-500/5 p-4 text-sm">
-        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+      <div className="flex items-start gap-2.5 rounded-xl border bg-gradient-to-r from-primary/5 via-card to-amber-500/5 p-3 text-xs sm:gap-3 sm:p-4 sm:text-sm">
+        <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary sm:size-9">
           <Guitar className="size-4" aria-hidden="true" />
         </div>
         <p className="text-muted-foreground">
@@ -205,27 +205,27 @@ export default function AssignmentsPage() {
             </Table>
           </div>
 
-          <div className="grid gap-3 md:hidden">
+          <div className="grid gap-2 md:hidden">
             {assignedStudents.map((student) => (
               <article
                 key={student.id}
-                className="rounded-xl border bg-card p-4 shadow-sm"
+                className="rounded-xl border bg-card p-3 shadow-sm"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="size-9">
-                      <AvatarFallback>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <Avatar className="size-8">
+                      <AvatarFallback className="text-[11px]">
                         {initials(student.firstName, student.lastName)}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
+                    <div className="min-w-0">
                       <Link
                         to={`/estudiantes/${student.id}`}
-                        className="text-sm font-medium underline-offset-4 hover:text-primary hover:underline"
+                        className="block truncate text-sm font-medium underline-offset-4 hover:text-primary hover:underline"
                       >
                         {fullName(student.firstName, student.lastName)}
                       </Link>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="truncate text-[11px] text-muted-foreground">
                         {student.studentCedula ?? student.id}
                       </p>
                     </div>
@@ -234,7 +234,7 @@ export default function AssignmentsPage() {
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      className="text-destructive hover:text-destructive"
+                      className="shrink-0 text-destructive hover:text-destructive"
                       onClick={() => setUnassignStudent(student)}
                       aria-label={`Liberar instrumento de ${student.firstName} ${student.lastName}`}
                     >
@@ -243,20 +243,20 @@ export default function AssignmentsPage() {
                   )}
                 </div>
 
-                <div className="mt-3 flex items-center justify-between gap-3 border-t pt-3">
-                  <div>
-                    <p className="text-sm font-medium capitalize">
+                <div className="mt-2.5 flex items-center justify-between gap-2 border-t pt-2.5">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-medium capitalize">
                       {student.instrument?.name}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="truncate text-[10px] text-muted-foreground">
                       {student.instrument?.brand}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="shrink-0 text-right">
                     {student.instrument && (
                       <CategoryBadge category={student.instrument.category} />
                     )}
-                    <p className="mt-1 font-mono text-xs">
+                    <p className="mt-1 font-mono text-[11px]">
                       {student.instrument?.serial}
                     </p>
                   </div>
@@ -265,13 +265,13 @@ export default function AssignmentsPage() {
             ))}
           </div>
 
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-muted-foreground sm:gap-2 sm:text-xs">
             <Users className="size-4 text-primary" />
             {assignedStudents.length}{' '}
             {assignedStudents.length === 1
               ? 'estudiante con instrumento'
               : 'estudiantes con instrumento'}{' '}
-            <Badge variant="muted" className="ml-1">
+            <Badge variant="muted" className="ml-1 text-[10px] sm:text-xs">
               {coverage}% de cobertura
             </Badge>
           </div>

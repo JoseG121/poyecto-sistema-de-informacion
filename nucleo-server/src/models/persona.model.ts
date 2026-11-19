@@ -86,6 +86,10 @@ export async function updatePersona(
   return mapPersona(row);
 }
 
+export async function deletePersona(client: PoolClient, id: number): Promise<void> {
+  await client.query('DELETE FROM persona WHERE id = $1', [id]);
+}
+
 export async function findPersonaById(id: number): Promise<Persona | null> {
   const result = await pool.query<PersonaRow>(
     'SELECT id, cedula, nombre, apellido, direccion FROM persona WHERE id = $1',

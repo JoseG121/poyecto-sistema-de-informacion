@@ -7,14 +7,18 @@ import {
   Link2,
   Mail,
   MapPin,
+  MoreHorizontal,
+  Pencil,
   Phone,
+  Trash2,
   Unlink,
   UserRound,
   Users,
 } from 'lucide-react'
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
+import { DeleteStudentDialog } from '@/components/shared/delete-student-dialog'
 import { EmptyState } from '@/components/shared/empty-state'
 import { CategoryBadge } from '@/components/shared/instrument-badges'
 import { PageHeader } from '@/components/shared/page-header'
@@ -28,10 +32,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AssignInstrumentDialog } from '@/components/assignments/AssignInstrumentDialog'
 import { useAuth } from '@/context/AuthContext'
 import { useData } from '@/context/DataContext'
+import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useEnrollmentPdf } from '@/utils/pdf/use-enrollment-pdf'
 import {
   formatLongDate,
@@ -66,8 +78,11 @@ export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { isAdmin } = useAuth()
   const { students, isLoading } = useData()
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const [assignOpen, setAssignOpen] = useState(false)
   const [unassignOpen, setUnassignOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const downloadPdf = useEnrollmentPdf()
 
   const student: Student | undefined = students.find(
@@ -107,72 +122,145 @@ export default function StudentDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-6">
       <PageHeader
         title={fullName(student.firstName, student.lastName)}
         description={`Inscrito el ${formatLongDate(student.enrollmentDate)} · ID ${student.id}`}
         actions={
-          <>
-            <Button variant="outline" asChild>
-              <Link to="/estudiantes">
-                <ArrowLeft className="size-4" />
-                Volver
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => downloadPdf(student)}
-            >
-              <Download className="size-4" />
-              Descargar planilla
-            </Button>
-            {isAdmin &&
-              (student.instrument ? (
-                <Button
-                  variant="outline"
-                  className="text-destructive hover:text-destructive"
-                  onClick={() => setUnassignOpen(true)}
-                >
-                  <Unlink className="size-4" />
-                  Liberar instrumento
+          isMobile ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  <MoreHorizontal className="size-4" />
+                  Acciones
                 </Button>
-              ) : (
-                <Button onClick={() => setAssignOpen(true)}>
-                  <Link2 className="size-4" />
-                  Asignar instrumento
-                </Button>
-              ))}
-          </>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/estudiantes">
+                    <ArrowLeft className="size-4" />
+                    Volver al listado
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => downloadPdf(student)}>
+                  <Download className="size-4" />
+                  Descargar planilla
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to={`/estudiantes/${student.id}/editar`}>
+                        <Pencil className="size-4" />
+                        Editar
+                      </Link>
+                    </DropdownMenuItem>
+                    {student.instrument ? (
+                      <DropdownMenuItem onSelect={() => setUnassignOpen(true)}>
+                        <Unlink className="size-4" />
+                        Liberar instrumento
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem onSelect={() => setAssignOpen(true)}>
+                        <Link2 className="size-4" />
+                        Asignar instrumento
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onSelect={() => setDeleteOpen(true)}
+                    >
+                      <Trash2 className="size-4" />
+                      Eliminar
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="outline" asChild>
+                <Link to="/estudiantes">
+                  <ArrowLeft className="size-4" />
+                  Volver
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => downloadPdf(student)}
+              >
+                <Download className="size-4" />
+                Descargar planilla
+              </Button>
+              {isAdmin && (
+                <>
+                  <Button variant="outline" asChild>
+                    <Link to={`/estudiantes/${student.id}/editar`}>
+                      <Pencil className="size-4" />
+                      Editar
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => setDeleteOpen(true)}
+                  >
+                    <Trash2 className="size-4" />
+                    Eliminar
+                  </Button>
+                </>
+              )}
+              {isAdmin &&
+                (student.instrument ? (
+                  <Button
+                    variant="outline"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => setUnassignOpen(true)}
+                  >
+                    <Unlink className="size-4" />
+                    Liberar instrumento
+                  </Button>
+                ) : (
+                  <Button onClick={() => setAssignOpen(true)}>
+                    <Link2 className="size-4" />
+                    Asignar instrumento
+                  </Button>
+                ))}
+            </>
+          )
         }
       />
 
-      <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
-        <Avatar className="size-12">
-          <AvatarFallback className="text-base">
+      <div className="flex items-center gap-2.5 rounded-xl border bg-card p-3 shadow-sm sm:gap-3 sm:p-4">
+        <Avatar className="size-10 sm:size-12">
+          <AvatarFallback className="text-sm sm:text-base">
             {initials(student.firstName, student.lastName)}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <p className="font-heading text-lg font-semibold">
+          <p className="truncate font-heading text-base font-semibold sm:text-lg">
             {fullName(student.firstName, student.lastName)}
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="truncate text-xs text-muted-foreground sm:text-sm">
             {student.studentCedula ?? 'Cédula del estudiante no registrada'}
           </p>
         </div>
-        <Badge variant="success">Matrícula activa</Badge>
+        <Badge variant="success" className="shrink-0 text-[10px] sm:text-xs">
+          Matrícula activa
+        </Badge>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <Card>
-            <CardHeader className="border-b">
+            <CardHeader className="border-b p-4 sm:p-6">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Users className="size-4 text-primary" aria-hidden="true" />
                 Datos del estudiante
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
+            <CardContent className="grid gap-4 p-4 pt-4 sm:grid-cols-2 sm:gap-5 sm:p-6 sm:pt-6">
               <DetailRow
                 icon={Users}
                 label="Nombre completo"
@@ -211,13 +299,13 @@ export default function StudentDetailPage() {
           </Card>
 
           <Card>
-            <CardHeader className="border-b">
+            <CardHeader className="border-b p-4 sm:p-6">
               <CardTitle className="flex items-center gap-2 text-base">
                 <UserRound className="size-4 text-primary" aria-hidden="true" />
                 Representante
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
+            <CardContent className="grid gap-4 p-4 pt-4 sm:grid-cols-2 sm:gap-5 sm:p-6 sm:pt-6">
               <DetailRow
                 icon={UserRound}
                 label="Nombre completo"
@@ -256,13 +344,13 @@ export default function StudentDetailPage() {
         </div>
 
         <Card className="h-fit">
-          <CardHeader className="border-b">
+          <CardHeader className="border-b p-4 sm:p-6">
             <CardTitle className="flex items-center gap-2 text-base">
               <Guitar className="size-4 text-primary" aria-hidden="true" />
               Instrumento asignado
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="p-4 pt-4 sm:p-6 sm:pt-6">
             {student.instrument ? (
               <div className="space-y-4">
                 <div className="rounded-xl border bg-gradient-to-br from-primary/5 via-card to-amber-500/5 p-4">
@@ -334,6 +422,13 @@ export default function StudentDetailPage() {
         student={student}
         open={unassignOpen}
         onOpenChange={setUnassignOpen}
+      />
+
+      <DeleteStudentDialog
+        student={student}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onDeleted={() => navigate('/estudiantes', { replace: true })}
       />
     </div>
   )

@@ -2,19 +2,38 @@ import { categoryLabels } from '../config/instrument-catalog';
 import { withTransaction } from '../db/pool';
 import {
   createEstudiante as createEstudianteRecord,
+  deleteEstudiante,
+  deleteRepresentantesByEstudiante,
+  deleteVinculoInstrumentoByInstrumento,
   findEstudianteById,
+  findEstudianteByIdForUpdate,
+  findPersonaIdByEstudiante,
+  findVinculoInstrumentoByEstudiante,
   listEstudiantes as listEstudianteRecords,
+  updateEstudiante as updateEstudianteRecord,
   type Estudiante,
   type EstudianteListResult,
 } from '../models/estudiante.model';
-import { createPersona, findPersonaByCedula } from '../models/persona.model';
+import { setEstadoInstrumento } from '../models/instrumento.model';
+import {
+  createPersona,
+  deletePersona,
+  findPersonaByCedula,
+  updatePersona,
+} from '../models/persona.model';
 import {
   createRepresentante,
   findRepresentanteByPersona,
+  setRepresentanteContacto,
   updateRepresentanteContacto,
   vincularRepresentante,
 } from '../models/representante.model';
-import type { CrearEstudianteInput, EstudianteListQuery } from '../schemas/estudiante.schema';
+import { findUsuarioIdByPersona } from '../models/usuario.model';
+import type {
+  ActualizarEstudianteInput,
+  CrearEstudianteInput,
+  EstudianteListQuery,
+} from '../schemas/estudiante.schema';
 import { AppError } from '../utils/AppError';
 
 export interface PlanillaCampo {
@@ -250,4 +269,133 @@ export async function obtenerPlanilla(id: number): Promise<Planilla> {
     campos,
     firmas: ['Firma del representante', 'Firma del coordinador'],
   };
+}
+
+export async function actualizarEstudiante(
+  id: number,
+  input: ActualizarEstudianteInput,
+): Promise<Estudiante> {
+  await withTransaction(async (client) => {
+    const estudiante = await findEstudianteByIdForUpdate(client, id);
+
+    if (!estudiante) {
+      throw new AppError(404, 'Estudiante no encontrado');
+    }
+
+    const personaVinculada = await findPersonaIdByEstudiante(client, id);
+
+    if (!personaVinculada) {
+      throw new AppError(404, 'Estudiante no encontrado');
+    }
+
+    if (input.estudiante.cedula) {
+      const existente = await findPersonaByCedula(client, input.estudiante.cedula);
+
+      if (existente && existente.id !== personaVinculada.id_persona) {
+        throw new AppError(409, 'La cédula del estudiante ya está registrada en el sistema');
+      }
+    }
+
+    await updatePersona(client, personaVinculada.id_persona, {
+      cedula: input.estudiante.cedula,
+      nombre: input.estudiante.nombre,
+      apellido: input.estudiante.apellido,
+      direccion: input.estudiante.direccion,
+    });
+
+    await updateEstudianteRecord(client, id, {
+      fechaNacimiento: input.estudiante.fechaNacimiento,
+      fechaInscripcion: input.fechaInscripcion,
+    });
+
+    const representante = input.representantes[0];
+
+    if (!representante) {
+      throw new AppError(400, 'Debes registrar un representante');
+    }
+
+    let personaRepresentante = await findPersonaByCedula(client, representante.cedula);
+
+    if (!personaRepresentante) {
+      personaRepresentante = await createPersona(client, {
+        cedula: representante.cedula,
+        nombre: representante.nombre,
+        apellido: representante.apellido,
+        direccion: representante.direccion,
+      });
+    } else {
+      await updatePersona(client, personaRepresentante.id, {
+        cedula: representante.cedula,
+        nombre: representante.nombre,
+        apellido: representante.apellido,
+        direccion: representante.direccion,
+      });
+    }
+
+    let registro = await findRepresentanteByPersona(client, personaRepresentante.id);
+
+    if (!registro) {
+      registro = await createRepresentante(client, {
+        idPersona: personaRepresentante.id,
+        correo: representante.correo,
+        telefono: representante.telefono,
+      });
+    } else {
+      await setRepresentanteContacto(
+        client,
+        registro.id,
+        representante.correo,
+        representante.telefono,
+      );
+    }
+
+    await deleteRepresentantesByEstudiante(client, id);
+    await vincularRepresentante(client, id, registro.id, representante.parentesco);
+  });
+
+  const estudiante = await findEstudianteById(id);
+
+  if (!estudiante) {
+    throw new AppError(500, 'No se pudo confirmar el estudiante actualizado');
+  }
+
+  return estudiante;
+}
+
+export async function eliminarEstudiante(id: number): Promise<{ id: number }> {
+  await withTransaction(async (client) => {
+    const estudiante = await findEstudianteByIdForUpdate(client, id);
+
+    if (!estudiante) {
+      throw new AppError(404, 'Estudiante no encontrado');
+    }
+
+    const personaVinculada = await findPersonaIdByEstudiante(client, id);
+
+    if (!personaVinculada) {
+      throw new AppError(404, 'Estudiante no encontrado');
+    }
+
+    const vinculo = await findVinculoInstrumentoByEstudiante(client, id);
+
+    if (vinculo) {
+      await deleteVinculoInstrumentoByInstrumento(client, vinculo.id_instrumento);
+      await setEstadoInstrumento(client, vinculo.id_instrumento, 'disponible');
+    }
+
+    const usuario = await findUsuarioIdByPersona(client, personaVinculada.id_persona);
+
+    if (usuario) {
+      throw new AppError(
+        409,
+        'No se puede eliminar el estudiante porque su cédula está vinculada a un usuario del sistema',
+      );
+    }
+
+    await deleteRepresentantesByEstudiante(client, id);
+    await deleteEstudiante(client, id);
+    await deletePersona(client, personaVinculada.id_persona);
+  });
+
+  return { id };
 }

@@ -20,7 +20,7 @@ export function NewInstrumentDialog({
 }: NewInstrumentDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90svh] max-w-lg overflow-y-auto">
+      <DialogContent className="max-h-[85svh] max-w-lg overflow-y-auto p-4 sm:max-h-[90svh] sm:p-6">
         <DialogHeader>
           <div className="mb-1 grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
             <Plus className="size-5" aria-hidden="true" />

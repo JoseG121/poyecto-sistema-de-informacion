@@ -96,6 +96,18 @@ export async function findUsuarioById(id: number): Promise<UsuarioRecord | null>
   return row ? mapUsuario(row) : null;
 }
 
+export async function findUsuarioIdByPersona(
+  client: PoolClient,
+  idPersona: number,
+): Promise<{ id: number } | null> {
+  const result = await client.query<{ id: number }>(
+    'SELECT id FROM usuario WHERE id_persona = $1',
+    [idPersona],
+  );
+
+  return result.rows[0] ?? null;
+}
+
 export async function createUsuario(
   client: PoolClient,
   data: CreateUsuarioData,

@@ -68,6 +68,11 @@ export interface CreateEstudianteData {
   fechaInscripcion: string | null;
 }
 
+export interface UpdateEstudianteData {
+  fechaNacimiento: string | null;
+  fechaInscripcion: string | null;
+}
+
 const estudianteSelect = `
   SELECT
     e.id,
@@ -246,6 +251,45 @@ export async function createEstudiante(
   }
 
   return inserted.id;
+}
+
+export async function findPersonaIdByEstudiante(
+  client: PoolClient,
+  id: number,
+): Promise<{ id_persona: number } | null> {
+  const result = await client.query<{ id_persona: number }>(
+    'SELECT id_persona FROM estudiante WHERE id = $1',
+    [id],
+  );
+
+  return result.rows[0] ?? null;
+}
+
+export async function updateEstudiante(
+  client: PoolClient,
+  id: number,
+  data: UpdateEstudianteData,
+): Promise<void> {
+  await client.query(
+    `UPDATE estudiante
+     SET fecha_nacimiento = $2,
+         fecha_inscripcion = COALESCE($3::date, fecha_inscripcion)
+     WHERE id = $1`,
+    [id, data.fechaNacimiento, data.fechaInscripcion],
+  );
+}
+
+export async function deleteRepresentantesByEstudiante(
+  client: PoolClient,
+  idEstudiante: number,
+): Promise<void> {
+  await client.query('DELETE FROM estudiante_representante WHERE id_estudiante = $1', [
+    idEstudiante,
+  ]);
+}
+
+export async function deleteEstudiante(client: PoolClient, id: number): Promise<void> {
+  await client.query('DELETE FROM estudiante WHERE id = $1', [id]);
 }
 
 export async function findEstudianteByIdForUpdate(

@@ -2,6 +2,7 @@ import { Guitar, Plus, Search, Users, X } from 'lucide-react'
 import { useDeferredValue, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { DeleteStudentDialog } from '@/components/shared/delete-student-dialog'
 import { EmptyState } from '@/components/shared/empty-state'
 import { ErrorState } from '@/components/shared/error-state'
 import { PageHeader } from '@/components/shared/page-header'
@@ -37,6 +38,7 @@ export default function StudentsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('todos')
   const [assignStudent, setAssignStudent] = useState<Student | null>(null)
   const [unassignStudent, setUnassignStudent] = useState<Student | null>(null)
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
   const deferredQuery = useDeferredValue(query)
   const downloadPdf = useEnrollmentPdf()
 
@@ -89,13 +91,13 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Estudiantes inscritos"
         description="Consulta los datos del alumno, su representante y el instrumento asignado."
         actions={
           isAdmin ? (
-            <Button asChild>
+            <Button asChild className="sm:w-auto">
               <Link to="/estudiantes/nuevo">
                 <Plus className="size-4" />
                 Nuevo estudiante
@@ -105,27 +107,27 @@ export default function StudentsPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:max-w-md">
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Con instrumento</p>
-          <p className="font-heading text-xl font-semibold">{withInstrument}</p>
+      <div className="grid grid-cols-2 gap-2 sm:max-w-md sm:gap-3">
+        <div className="rounded-lg border bg-card px-3 py-2.5 sm:px-4 sm:py-3">
+          <p className="text-[11px] text-muted-foreground sm:text-xs">Con instrumento</p>
+          <p className="font-heading text-lg font-semibold sm:text-xl">{withInstrument}</p>
         </div>
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Sin instrumento</p>
-          <p className="font-heading text-xl font-semibold">
+        <div className="rounded-lg border bg-card px-3 py-2.5 sm:px-4 sm:py-3">
+          <p className="text-[11px] text-muted-foreground sm:text-xs">Sin instrumento</p>
+          <p className="font-heading text-lg font-semibold sm:text-xl">
             {withoutInstrument}
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-sm sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-2 rounded-xl border bg-card p-2.5 shadow-sm sm:flex-row sm:items-center sm:gap-3 sm:p-3">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar por nombre, cédula o serial…"
-            className="pl-9"
+            className="h-9 pl-9 text-sm sm:h-10"
             aria-label="Buscar estudiantes"
           />
         </div>
@@ -134,7 +136,7 @@ export default function StudentsPage() {
           value={statusFilter}
           onValueChange={(value) => setStatusFilter(value as StatusFilter)}
         >
-          <SelectTrigger className="w-full sm:w-52" aria-label="Filtrar por instrumento">
+          <SelectTrigger className="h-9 w-full text-sm sm:h-10 sm:w-52" aria-label="Filtrar por instrumento">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -145,15 +147,15 @@ export default function StudentsPage() {
         </Select>
 
         {hasFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
+          <Button variant="ghost" size="sm" className="justify-center" onClick={clearFilters}>
             <X className="size-4" />
             Limpiar
           </Button>
         )}
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground" aria-live="polite">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground sm:text-sm" aria-live="polite">
           {filteredStudents.length}{' '}
           {filteredStudents.length === 1 ? 'estudiante' : 'estudiantes'}
           {hasFilters ? ' con los filtros aplicados' : ' en total'}
@@ -204,6 +206,7 @@ export default function StudentsPage() {
               onAssign={setAssignStudent}
               onUnassign={setUnassignStudent}
               onDownloadPdf={downloadPdf}
+              onDelete={setStudentToDelete}
             />
           </div>
           <div className="md:hidden">
@@ -212,6 +215,7 @@ export default function StudentsPage() {
               onAssign={setAssignStudent}
               onUnassign={setUnassignStudent}
               onDownloadPdf={downloadPdf}
+              onDelete={setStudentToDelete}
             />
           </div>
         </>
@@ -233,6 +237,16 @@ export default function StudentsPage() {
         onOpenChange={(open) => {
           if (!open) {
             setUnassignStudent(null)
+          }
+        }}
+      />
+
+      <DeleteStudentDialog
+        student={studentToDelete}
+        open={studentToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setStudentToDelete(null)
           }
         }}
       />

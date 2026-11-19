@@ -124,7 +124,7 @@ export function AssignInstrumentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-h-[90svh] max-w-lg overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <div className="mb-1 grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
             <Link2 className="size-5" aria-hidden="true" />

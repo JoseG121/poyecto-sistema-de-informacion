@@ -19,6 +19,7 @@ import { AssignInstrumentDialog } from '@/components/assignments/AssignInstrumen
 import { useAuth } from '@/context/AuthContext'
 import { useData } from '@/context/DataContext'
 import { InstrumentCard } from '@/components/instruments/InstrumentCard'
+import { InstrumentList } from '@/components/instruments/InstrumentList'
 import { InstrumentsTable } from '@/components/instruments/InstrumentsTable'
 import { NewInstrumentDialog } from '@/components/instruments/NewInstrumentDialog'
 import {
@@ -124,13 +125,13 @@ export default function InstrumentsPage() {
   }
 
   return (
-    <div className="w-full space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="w-full space-y-4 sm:space-y-6">
       <PageHeader
         title="Instrumentos"
         description="Inventario del núcleo organizado por categoría, con marca y serial único por instrumento."
         actions={
           isAdmin ? (
-            <Button onClick={() => setNewInstrumentOpen(true)}>
+            <Button onClick={() => setNewInstrumentOpen(true)} className="sm:w-auto">
               <Plus className="size-4" />
               Nuevo instrumento
             </Button>
@@ -138,28 +139,28 @@ export default function InstrumentsPage() {
         }
       />
 
-      <div className="grid grid-cols-3 gap-3 sm:max-w-lg">
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Total</p>
-          <p className="font-heading text-xl font-semibold">
+      <div className="grid grid-cols-3 gap-2 sm:max-w-lg sm:gap-3">
+        <div className="rounded-lg border bg-card px-2.5 py-2 sm:px-4 sm:py-3">
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Total</p>
+          <p className="font-heading text-lg font-semibold sm:text-xl">
             {instruments.length}
           </p>
         </div>
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Disponibles</p>
-          <p className="font-heading text-xl font-semibold text-emerald-600 dark:text-emerald-400">
+        <div className="rounded-lg border bg-card px-2.5 py-2 sm:px-4 sm:py-3">
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Disponibles</p>
+          <p className="font-heading text-lg font-semibold text-emerald-600 dark:text-emerald-400 sm:text-xl">
             {available}
           </p>
         </div>
-        <div className="rounded-lg border bg-card px-4 py-3">
-          <p className="text-xs text-muted-foreground">Asignados</p>
-          <p className="font-heading text-xl font-semibold text-amber-600 dark:text-amber-400">
+        <div className="rounded-lg border bg-card px-2.5 py-2 sm:px-4 sm:py-3">
+          <p className="text-[10px] text-muted-foreground sm:text-xs">Asignados</p>
+          <p className="font-heading text-lg font-semibold text-amber-600 dark:text-amber-400 sm:text-xl">
             {assigned}
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-sm lg:flex-row lg:items-center">
+      <div className="flex flex-col gap-2 rounded-xl border bg-card p-2.5 shadow-sm sm:gap-3 sm:p-3 lg:flex-row lg:items-center">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -212,11 +213,11 @@ export default function InstrumentsPage() {
         )}
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground" aria-live="polite">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground sm:text-sm" aria-live="polite">
           {filteredInstruments.length}{' '}
           {filteredInstruments.length === 1 ? 'instrumento' : 'instrumentos'}
-          {hasFilters ? ' con los filtros aplicados' : ' en inventario'}
+          {hasFilters ? ' con filtros' : ' en inventario'}
         </p>
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <Badge variant="outline" className="hidden md:inline-flex">
@@ -224,7 +225,7 @@ export default function InstrumentsPage() {
             Serial único validado
           </Badge>
           <div
-            className="inline-flex items-center rounded-lg border bg-card p-1 shadow-sm"
+            className="inline-flex items-center rounded-lg border bg-card p-0.5 shadow-sm sm:p-1"
             role="group"
             aria-label="Cambiar vista de instrumentos"
           >
@@ -232,7 +233,7 @@ export default function InstrumentsPage() {
               type="button"
               variant={view === 'cards' ? 'secondary' : 'ghost'}
               size="sm"
-              className="h-8 px-2.5"
+              className="h-8 px-2 sm:px-2.5"
               onClick={() => setView('cards')}
               aria-pressed={view === 'cards'}
               aria-label="Vista de tarjetas"
@@ -245,7 +246,7 @@ export default function InstrumentsPage() {
               type="button"
               variant={view === 'list' ? 'secondary' : 'ghost'}
               size="sm"
-              className="h-8 px-2.5"
+              className="h-8 px-2 sm:px-2.5"
               onClick={() => setView('list')}
               aria-pressed={view === 'list'}
               aria-label="Vista de lista"
@@ -262,11 +263,11 @@ export default function InstrumentsPage() {
         <ErrorState message={error} onRetry={() => void refresh()} />
       ) : showLoading ? (
         view === 'cards' ? (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-2 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
               <div
                 key={index}
-                className="h-64 animate-pulse rounded-xl border bg-card"
+                className="h-48 animate-pulse rounded-xl border bg-card sm:h-64"
               />
             ))}
           </div>
@@ -306,7 +307,7 @@ export default function InstrumentsPage() {
           }
         />
       ) : view === 'cards' ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
           {filteredInstruments.map((instrument) => (
             <InstrumentCard
               key={instrument.id}
@@ -322,12 +323,24 @@ export default function InstrumentsPage() {
           ))}
         </div>
       ) : (
-        <InstrumentsTable
-          instruments={filteredInstruments}
-          studentNames={studentNames}
-          onAssign={setAssignInstrument}
-          onUnassign={handleUnassign}
-        />
+        <>
+          <div className="hidden md:block">
+            <InstrumentsTable
+              instruments={filteredInstruments}
+              studentNames={studentNames}
+              onAssign={setAssignInstrument}
+              onUnassign={handleUnassign}
+            />
+          </div>
+          <div className="md:hidden">
+            <InstrumentList
+              instruments={filteredInstruments}
+              studentNames={studentNames}
+              onAssign={setAssignInstrument}
+              onUnassign={handleUnassign}
+            />
+          </div>
+        </>
       )}
 
       <div className="flex items-center justify-center gap-2 rounded-xl border border-dashed bg-muted/20 px-4 py-3 text-xs text-muted-foreground">

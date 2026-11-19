@@ -36,48 +36,50 @@ export function InstrumentCard({
         )}
       />
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-3 sm:p-5">
         <div className="flex items-start justify-between gap-2">
           <CategoryBadge category={instrument.category} />
           <InstrumentStatusBadge status={instrument.status} />
         </div>
 
-        <div className="mt-4 flex items-start gap-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-            <Guitar className="size-5" aria-hidden="true" />
+        <div className="mt-3 flex items-start gap-2.5 sm:mt-4 sm:gap-3">
+          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary sm:size-10">
+            <Guitar className="size-4 sm:size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <h3 className="truncate font-heading text-base font-semibold capitalize">
+            <h3 className="truncate font-heading text-sm font-semibold capitalize sm:text-base">
               {instrument.name}
             </h3>
-            <p className="truncate text-sm text-muted-foreground">
+            <p className="truncate text-xs text-muted-foreground sm:text-sm">
               {instrument.brand}
             </p>
           </div>
         </div>
 
-        <div className="mt-4 rounded-lg border bg-muted/30 px-3 py-2">
-          <p className="text-[10px] tracking-wider text-muted-foreground uppercase">
+        <div className="mt-3 rounded-lg border bg-muted/30 px-2.5 py-1.5 sm:mt-4 sm:px-3 sm:py-2">
+          <p className="text-[9px] tracking-wider text-muted-foreground uppercase sm:text-[10px]">
             Serial
           </p>
-          <p className="font-mono text-sm font-medium">{instrument.serial}</p>
+          <p className="font-mono text-xs font-medium sm:text-sm">
+            {instrument.serial}
+          </p>
         </div>
 
-        <div className="mt-4 flex-1">
+        <div className="mt-3 flex-1 sm:mt-4">
           {assignedStudentName ? (
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground sm:text-xs">
               <UserRound className="size-3.5 shrink-0" />
               <span className="truncate">{assignedStudentName}</span>
             </p>
           ) : (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground sm:text-xs">
               Listo para asignar a un estudiante.
             </p>
           )}
         </div>
 
         {isAdmin && (
-          <div className="mt-4 border-t pt-4">
+          <div className="mt-3 border-t pt-3 sm:mt-4 sm:pt-4">
             {instrument.status === 'disponible' ? (
               <Button
                 className="w-full"

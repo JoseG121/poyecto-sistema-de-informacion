@@ -125,6 +125,43 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
+function MobileBottomNav() {
+  return (
+    <nav
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur-md sm:hidden"
+      aria-label="Navegación principal"
+      style={{ paddingBottom: 'max(0.25rem, env(safe-area-inset-bottom))' }}
+    >
+      <div className="mx-auto grid max-w-lg grid-cols-4">
+        {navigation.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              cn(
+                'flex flex-col items-center justify-center gap-1 px-1 py-2 text-[11px] font-medium transition-colors',
+                isActive
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground',
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <item.icon
+                  className={cn('size-5', isActive && 'stroke-[2.4]')}
+                  aria-hidden="true"
+                />
+                <span className="leading-none">{item.label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  )
+}
+
 function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-sidebar-border bg-sidebar lg:flex lg:flex-col">
@@ -196,11 +233,11 @@ export function AppShell() {
       <Sidebar />
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background/80 px-3 backdrop-blur-md sm:h-16 sm:gap-3 sm:px-6 lg:px-8">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="hidden sm:inline-flex lg:hidden"
             onClick={() => setMobileOpen(true)}
             aria-label="Abrir menú de navegación"
           >
@@ -214,16 +251,18 @@ export function AppShell() {
             </p>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1">
             <ThemeToggle />
             <UserMenu />
           </div>
         </header>
 
-        <main className="w-full min-w-0">
+        <main className="w-full min-w-0 px-3 py-3 pb-24 sm:px-6 sm:py-6 sm:pb-6 lg:px-8">
           <Outlet />
         </main>
       </div>
+
+      <MobileBottomNav />
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent side="left" className="w-72 p-0">

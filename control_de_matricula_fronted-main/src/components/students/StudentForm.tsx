@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { GraduationCap, Loader2, Save, UserRound } from 'lucide-react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -45,12 +46,18 @@ interface StudentFormProps {
   onSubmit: (values: StudentFormValues) => Promise<void>
   submitLabel?: string
   className?: string
+  defaultValues?: StudentFormValues
+  errorTitle?: string
+  cancelTo?: string
 }
 
 export function StudentForm({
   onSubmit,
   submitLabel = 'Registrar estudiante',
   className,
+  defaultValues,
+  errorTitle = 'No se pudo registrar al estudiante',
+  cancelTo = '/estudiantes',
 }: StudentFormProps) {
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(studentSchema),
@@ -67,8 +74,17 @@ export function StudentForm({
       representativeTelefono: '',
       representativeCorreo: '',
       parentesco: 'Tutor',
+      ...defaultValues,
     },
   })
+
+  const { reset } = form
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues)
+    }
+  }, [defaultValues, reset])
 
   const isSubmitting = form.formState.isSubmitting
 
@@ -87,7 +103,7 @@ export function StudentForm({
       }
 
       if (!hasFieldError) {
-        toast.error('No se pudo registrar al estudiante', {
+        toast.error(errorTitle, {
           description: getErrorMessage(error),
         })
       }
@@ -98,13 +114,13 @@ export function StudentForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <Card className={cn('w-full border-border/70 shadow-sm', className)}>
-          <CardHeader className="border-b">
+          <CardHeader className="border-b p-4 sm:p-6">
             <div className="flex items-center gap-2">
               <GraduationCap className="size-5 text-primary" aria-hidden="true" />
               <CardTitle className="text-base">Datos del estudiante</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
+          <CardContent className="grid gap-4 p-4 pt-4 sm:grid-cols-2 sm:gap-5 sm:p-6 sm:pt-6">
             <FormField
               control={form.control}
               name="firstName"
@@ -199,13 +215,13 @@ export function StudentForm({
 
           <Separator />
 
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6">
             <div className="flex items-center gap-2">
               <UserRound className="size-5 text-primary" aria-hidden="true" />
               <CardTitle className="text-base">Datos del representante</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="grid gap-5 pt-6 sm:grid-cols-2">
+          <CardContent className="grid gap-4 p-4 pt-0 sm:grid-cols-2 sm:gap-5 sm:p-6 sm:pt-0">
             <FormField
               control={form.control}
               name="representativeFirstName"
@@ -346,9 +362,9 @@ export function StudentForm({
             />
           </CardContent>
 
-          <div className="flex flex-col-reverse gap-2 border-t px-6 pt-6 sm:flex-row sm:justify-end">
+          <div className="flex flex-col-reverse gap-2 border-t p-4 sm:flex-row sm:justify-end sm:px-6 sm:pt-6">
             <Button type="button" variant="outline" asChild>
-              <Link to="/estudiantes">Cancelar</Link>
+              <Link to={cancelTo}>Cancelar</Link>
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (

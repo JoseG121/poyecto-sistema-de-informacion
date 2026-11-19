@@ -70,6 +70,10 @@ export interface StudentInput {
   parentesco: string
 }
 
+export interface StudentUpdateInput extends StudentInput {
+  fechaInscripcion: string
+}
+
 export interface InstrumentInput {
   category: InstrumentCategory
   name: string

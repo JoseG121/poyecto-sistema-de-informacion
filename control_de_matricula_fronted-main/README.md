@@ -64,9 +64,10 @@ El backend aplica las restricciones reales (devuelve `403` cuando corresponde) y
 | Consultar estudiantes, instrumentos y asignaciones | Sí | Sí |
 | Generar planilla PDF | Sí | Sí |
 | Registrar estudiantes e instrumentos | Sí | No |
+| Editar / eliminar estudiantes | Sí | No |
 | Asignar / liberar instrumentos | Sí | No |
 
-Las rutas `/estudiantes/nuevo` y los botones de creación/asignación/liberación solo se muestran al rol `admin`.
+Las rutas `/estudiantes/nuevo` y `/estudiantes/:id/editar`, y los botones de creación/edición/eliminación/asignación/liberación solo se muestran al rol `admin`.
 
 ## Contrato con el backend
 
@@ -81,6 +82,8 @@ Todas las respuestas exitosas usan el envelope `{ "datos": ... }`; las listas in
 | `GET` | `/estudiantes` | Lista de estudiantes |
 | `GET` | `/estudiantes/:id` | Detalle de estudiante |
 | `POST` | `/estudiantes` | Alta de estudiante con representantes |
+| `PUT` | `/estudiantes/:id` | Edición de estudiante y representante |
+| `DELETE` | `/estudiantes/:id` | Eliminación del estudiante (libera su instrumento) |
 | `GET` | `/estudiantes/:id/planilla` | Datos de la planilla |
 | `GET` | `/instrumentos` | Lista de instrumentos |
 | `GET` | `/instrumentos/verificar-serial?serial=` | Disponibilidad en tiempo real del serial |
@@ -93,7 +96,7 @@ El token JWT se guarda en `localStorage` (`nucleo.auth.token`) y se adjunta como
 ## Funcionalidades
 
 - **Autenticación:** registro con clave de validación, login por cédula, persistencia de sesión y rutas protegidas por rol.
-- **Estudiantes:** alta validada con parentesco del representante, tabla/tarjetas responsive, búsqueda y ficha de detalle.
+- **Estudiantes:** alta y edición validadas con parentesco del representante, eliminación con liberación automática del instrumento, tabla/tarjetas responsive, búsqueda y ficha de detalle.
 - **Instrumentos:** catálogo por categoría y verificación de serial único contra la API antes de guardar.
 - **Asignaciones:** vinculación por estudiante y serial, prevención de conflictos y liberación.
 - **Dashboard:** métricas de matrícula, cobertura instrumental y distribución por categoría.
