@@ -91,6 +91,8 @@ export function generateEnrollmentPdf(student: Student): void {
     58,
   )
 
+  const representative = student.representatives[0]
+
   let y = addSectionTitle(doc, 'Datos del estudiante', 70)
 
   addField(
@@ -102,9 +104,20 @@ export function generateEnrollmentPdf(student: Student): void {
     80,
   )
   addField(doc, 'Cédula', student.studentCedula ?? 'No registrada', 110, y, 40)
-  addField(doc, 'Fecha de inscripción', formatLongDate(student.enrollmentDate), 155, y, 40)
+  addField(
+    doc,
+    'Fecha de nacimiento',
+    student.fechaNacimiento ? formatLongDate(student.fechaNacimiento) : 'No registrada',
+    155,
+    y,
+    40,
+  )
 
-  y += 16
+  y += 14
+  addField(doc, 'Dirección', student.direccion ?? 'No registrada', 15, y, 90)
+  addField(doc, 'Fecha de inscripción', formatLongDate(student.enrollmentDate), 110, y, 85)
+
+  y += 18
   y = addSectionTitle(doc, 'Datos del representante', y)
 
   addField(
@@ -119,8 +132,14 @@ export function generateEnrollmentPdf(student: Student): void {
     80,
   )
   addField(doc, 'Cédula', student.representativeCedula, 110, y, 40)
+  addField(doc, 'Parentesco', representative?.parentesco ?? '', 155, y, 40)
 
-  y += 16
+  y += 14
+  addField(doc, 'Dirección', representative?.direccion ?? 'No registrada', 15, y, 90)
+  addField(doc, 'Teléfono', representative?.telefono ?? 'No registrado', 110, y, 40)
+  addField(doc, 'Correo', representative?.correo ?? 'No registrado', 155, y, 40)
+
+  y += 18
   y = addSectionTitle(doc, 'Instrumento asignado', y)
 
   if (student.instrument) {

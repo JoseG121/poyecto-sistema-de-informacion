@@ -76,7 +76,7 @@ Authorization: Bearer {{adminToken}}
 GET {{baseUrl}}/estudiantes/{{estudianteId}}/planilla
 Authorization: Bearer {{adminToken}}
 
-### Crear estudiante con dos representantes
+### Crear estudiante con un representante (fecha de inscripción automática)
 POST {{baseUrl}}/estudiantes
 Authorization: Bearer {{adminToken}}
 Content-Type: application/json
@@ -98,18 +98,8 @@ Content-Type: application/json
       "correo": "laura.hernandez@correo.com",
       "telefono": "0414-4567890",
       "parentesco": "Madre"
-    },
-    {
-      "cedula": "V-45678902",
-      "nombre": "Pedro",
-      "apellido": "Hernández",
-      "direccion": "Calle Bolívar, casa 5",
-      "correo": "pedro.hernandez@correo.com",
-      "telefono": "0414-4567891",
-      "parentesco": "Padre"
     }
-  ],
-  "fechaInscripcion": "2026-11-17"
+  ]
 }
 
 ### Crear estudiante sin cédula
@@ -120,13 +110,17 @@ Content-Type: application/json
 {
   "estudiante": {
     "nombre": "Valentina",
-    "apellido": "Gómez"
+    "apellido": "Gómez",
+    "direccion": "Av. Libertador, casa 20",
+    "fechaNacimiento": "2014-03-09"
   },
   "representantes": [
     {
       "cedula": "V-56789012",
       "nombre": "Pedro",
       "apellido": "Gómez",
+      "direccion": "Av. Libertador, casa 20",
+      "telefono": "0424-5678901",
       "parentesco": "Padre"
     }
   ]

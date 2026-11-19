@@ -19,17 +19,6 @@ const cedulaOpcionalSchema = z
     return value;
   });
 
-const direccionOpcionalSchema = z
-  .union([direccionSchema, z.literal(''), z.null()])
-  .optional()
-  .transform((value) => {
-    if (value === undefined || value === null || value === '') {
-      return null;
-    }
-
-    return value;
-  });
-
 const fechaOpcionalSchema = z
   .union([fechaSchema, z.literal(''), z.null()])
   .optional()
@@ -59,32 +48,27 @@ const correoOpcionalSchema = z
     return value;
   });
 
-const telefonoOpcionalSchema = z
-  .union([z.string().trim().max(30, 'El teléfono es demasiado largo'), z.literal(''), z.null()])
-  .optional()
-  .transform((value) => {
-    if (value === undefined || value === null || value === '') {
-      return null;
-    }
-
-    return value;
-  });
+const telefonoSchema = z
+  .string()
+  .trim()
+  .min(1, 'El teléfono es obligatorio')
+  .max(30, 'El teléfono es demasiado largo');
 
 export const estudiantePersonaSchema = z.object({
   cedula: cedulaOpcionalSchema,
   nombre: nombreSchema,
   apellido: apellidoSchema,
-  direccion: direccionOpcionalSchema,
-  fechaNacimiento: fechaOpcionalSchema,
+  direccion: direccionSchema,
+  fechaNacimiento: fechaSchema,
 });
 
 export const representanteSchema = z.object({
   cedula: cedulaSchema,
   nombre: nombreSchema,
   apellido: apellidoSchema,
-  direccion: direccionOpcionalSchema,
+  direccion: direccionSchema,
   correo: correoOpcionalSchema,
-  telefono: telefonoOpcionalSchema,
+  telefono: telefonoSchema,
   parentesco: z
     .string()
     .trim()
@@ -96,8 +80,8 @@ export const crearEstudianteSchema = z.object({
   estudiante: estudiantePersonaSchema,
   representantes: z
     .array(representanteSchema)
-    .min(1, 'Debes registrar al menos un representante')
-    .max(10, 'No se pueden registrar más de 10 representantes'),
+    .min(1, 'Debes registrar un representante')
+    .max(1, 'Solo se permite un representante por estudiante'),
   fechaInscripcion: fechaOpcionalSchema,
 });
 
