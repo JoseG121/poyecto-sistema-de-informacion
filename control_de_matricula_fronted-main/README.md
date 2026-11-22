@@ -25,10 +25,10 @@ Frontend de la aplicación de matrícula del núcleo musical **Puerto de Altagra
 
 ## Configuración
 
-Copia `.env.example` a `.env` y ajusta la URL del backend:
+Copia `.env.example` a `.env`. La URL del backend es relativa para usar el proxy de Vite en desarrollo y preview:
 
 ```env
-VITE_API_URL=http://localhost:3001/api
+VITE_API_URL=/api
 ```
 
 ## Puesta en marcha
@@ -41,7 +41,9 @@ npm run dev
 Frontend: <http://localhost:5173>  
 Backend: <http://localhost:3001/api>
 
-El backend debe permitir el origen `http://localhost:5173` mediante `CORS_ORIGIN`.
+Para abrir la app desde el celular, usa la IP de la máquina en la misma red (por ejemplo `http://192.168.236.80:5173`). Las peticiones a `/api` son reenviadas por Vite a `http://127.0.0.1:3001`, así que no hace falta exponer el puerto 3001 ni configurar CORS para ese caso.
+
+Si sirves `dist/` con otro servidor estático, ese servidor debe redirigir `/api` al backend. De lo contrario, define `VITE_API_URL` con la URL completa del backend y ajusta `CORS_ORIGIN`.
 
 ## Credenciales de demostración
 

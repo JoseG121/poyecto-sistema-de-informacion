@@ -11,6 +11,10 @@ export type InstrumentStatus = 'disponible' | 'asignado'
 
 export type UserRole = 'admin' | 'user'
 
+export const DOCUMENT_TYPES = ['V', 'E', 'J', 'G', 'P'] as const
+
+export type DocumentType = (typeof DOCUMENT_TYPES)[number]
+
 export interface Instrument {
   id: string
   category: InstrumentCategory

@@ -47,7 +47,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             {APP.name}
           </p>
           <h1 className="font-heading text-4xl leading-[1.08] font-semibold tracking-tight xl:text-5xl">
-            Tocar cantar y luchar.
+            Tocar, cantar y luchar.
           </h1>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-white/65">
             Administra la matrícula, el inventario instrumental y las

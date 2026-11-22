@@ -1,6 +1,6 @@
-import type { InstrumentCategory } from '@/types/domain'
+import type { DocumentType, InstrumentCategory } from '@/types/domain'
 
-export { INSTRUMENT_CATEGORIES } from '@/types/domain'
+export { DOCUMENT_TYPES, INSTRUMENT_CATEGORIES } from '@/types/domain'
 
 export const APP = {
   name: 'Núcleo Puerto de Altagracia',
@@ -42,6 +42,14 @@ export const INSTRUMENT_CATEGORY_DESCRIPTIONS: Record<
   madera: 'Flauta, oboe, clarinete y fagot',
   metal: 'Trompeta, corno, trombón y tuba',
   percusion: 'Escribe libremente el instrumento de percusión',
+}
+
+export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  V: 'V — Venezolana',
+  E: 'E — Extranjera',
+  J: 'J — Jurídica',
+  G: 'G — Gubernamental',
+  P: 'P — Pasaporte',
 }
 
 export const INSTRUMENT_CATEGORY_STYLES: Record<

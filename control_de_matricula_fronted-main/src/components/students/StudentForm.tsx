@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 
+import { CedulaInput } from '@/components/shared/cedula-input'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -163,16 +164,14 @@ export function StudentForm({
               render={({ field }) => (
                 <FormItem className="sm:col-span-2 sm:max-w-md">
                   <FormLabel>Cédula del estudiante (opcional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      autoComplete="off"
-                      placeholder="V-12345678"
-                      maxLength={15}
-                    />
-                  </FormControl>
+                  <CedulaInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder="12345678"
+                  />
                   <FormDescription>
-                    Puede quedar vacía. Si se indica, debe ser única.
+                    Elige el tipo (V, E, J, G o P). Puede quedar vacía; si se
+                    indica, debe ser única.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -264,16 +263,14 @@ export function StudentForm({
               render={({ field }) => (
                 <FormItem className="sm:col-span-2 sm:max-w-md">
                   <FormLabel>Cédula del representante</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      autoComplete="off"
-                      placeholder="V-87654321"
-                      maxLength={15}
-                    />
-                  </FormControl>
+                  <CedulaInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder="12345678"
+                  />
                   <FormDescription>
-                    Campo obligatorio. Formato: V-12345678 o E-12345678.
+                    Campo obligatorio. Selecciona V, E, J, G o P e ingresa el
+                    número.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

@@ -166,7 +166,7 @@ function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-sidebar-border bg-sidebar lg:flex lg:flex-col">
       <div className="flex h-16 items-center border-b border-sidebar-border px-5">
-        <BrandMark />
+        <img src="imagen/logo1.png" alt="Hola" />
       </div>
       <div className="flex flex-1 flex-col py-4">
         <SidebarNav />

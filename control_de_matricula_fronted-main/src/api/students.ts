@@ -2,11 +2,26 @@ import { api } from '@/api/http'
 import { mapEstudiante } from '@/api/mappers'
 import type { ApiEnvelope, BackendEstudiante } from '@/types/api'
 import type { Student, StudentInput, StudentUpdateInput } from '@/types/domain'
+import { formatCedula, splitCedula } from '@/utils/cedula'
+
+function normalizeCedula(value: string | undefined): string | null {
+  if (!value?.trim()) {
+    return null
+  }
+
+  const { type, number } = splitCedula(value)
+
+  if (!number) {
+    return null
+  }
+
+  return formatCedula(type, number)
+}
 
 function buildPayload(input: StudentInput, fechaInscripcion?: string) {
   return {
     estudiante: {
-      cedula: input.studentCedula?.trim() || null,
+      cedula: normalizeCedula(input.studentCedula),
       nombre: input.firstName.trim(),
       apellido: input.lastName.trim(),
       direccion: input.studentDireccion.trim(),
@@ -14,7 +29,7 @@ function buildPayload(input: StudentInput, fechaInscripcion?: string) {
     },
     representantes: [
       {
-        cedula: input.representativeCedula.trim(),
+        cedula: normalizeCedula(input.representativeCedula) ?? '',
         nombre: input.representativeFirstName.trim(),
         apellido: input.representativeLastName.trim(),
         direccion: input.representativeDireccion.trim(),

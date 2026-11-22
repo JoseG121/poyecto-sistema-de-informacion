@@ -3,7 +3,7 @@ import axios, { type AxiosError } from 'axios'
 import { tokenStorage } from '@/utils/token-storage'
 import type { ApiError, ApiErrorResponse } from '@/types/api'
 
-const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001/api'
+const baseURL = import.meta.env.VITE_API_URL ?? '/api'
 
 const fieldAliases: Record<string, string> = {
   cedula: 'cedula',

@@ -5,15 +5,26 @@ import {
   INSTRUMENT_CATEGORIES,
   VALIDATION_KEY,
 } from '@/utils/constants'
+import { splitCedula } from '@/utils/cedula'
 
 const CEDULA_PATTERN = /^[VEve]?-?\d{6,10}$/
 const NAME_PATTERN = /^[\p{L}\s'’-]+$/u
 const SERIAL_PATTERN = /^[A-Za-z0-9-]+$/
+const DOCUMENT_NUMBER_PATTERN = /^\d{6,10}$/
+const PASSPORT_PATTERN = /^[A-Z0-9]{6,15}$/
 
 export const passwordSchema = z
   .string()
   .min(8, 'La contraseña debe tener al menos 8 caracteres')
   .max(72, 'La contraseña no puede superar 72 caracteres')
+
+function isValidPersonaCedula(value: string): boolean {
+  const { type, number } = splitCedula(value)
+
+  return type === 'P'
+    ? PASSPORT_PATTERN.test(number)
+    : DOCUMENT_NUMBER_PATTERN.test(number)
+}
 
 export const requiredCedulaSchema = z
   .string()
@@ -57,12 +68,21 @@ export const registerSchema = z
     path: ['confirmarContrasena'],
   })
 
-export const optionalCedulaSchema = z
+export const requiredPersonaCedulaSchema = z
+  .string()
+  .trim()
+  .min(1, 'La cédula es obligatoria')
+  .max(30, 'La cédula es demasiado larga')
+  .refine((value) => splitCedula(value).number.length > 0, 'La cédula es obligatoria')
+  .refine(isValidPersonaCedula, 'Formato inválido. Ejemplo: V-12345678')
+
+export const optionalPersonaCedulaSchema = z
   .string()
   .trim()
   .max(30, 'La cédula es demasiado larga')
   .refine(
-    (value) => value === '' || CEDULA_PATTERN.test(value),
+    (value) =>
+      value === '' || splitCedula(value).number === '' || isValidPersonaCedula(value),
     'Formato inválido. Ejemplo: V-12345678',
   )
 
@@ -124,12 +144,12 @@ export const correoOpcionalSchema = z
   )
 
 export const studentSchema = z.object({
-  studentCedula: optionalCedulaSchema,
+  studentCedula: optionalPersonaCedulaSchema,
   firstName: personNameSchema,
   lastName: personNameSchema,
   studentDireccion: direccionSchema,
   fechaNacimiento: fechaNacimientoSchema,
-  representativeCedula: requiredCedulaSchema,
+  representativeCedula: requiredPersonaCedulaSchema,
   representativeFirstName: personNameSchema,
   representativeLastName: personNameSchema,
   representativeDireccion: direccionSchema,
